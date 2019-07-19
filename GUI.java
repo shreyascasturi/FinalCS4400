@@ -2,6 +2,7 @@ import java.util.Scanner;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.sql.*; // import the big package.
+import java.time.LocalDate;
 public class GUI {
     public static String userID = ""; // set the basic String.
     public static boolean isAdmin  = false; // set the boolean as false.
@@ -24,7 +25,7 @@ public class GUI {
                 // you decide to exit out of the login screen.
                 if (resultofLogin == -1) { // if -1, we'll choose to break. Zeroes and other things continue the outer loop.
                     break; // this ends the app.
-                } 
+                }
             } else if (ChoiceIntroString == 2) { // assume register.
                 System.out.println("GO BACK INTO IT, REGISTER");
                 int resultofRegister = register(); // do login, and eventually go from there. This int is unnecessary unless
@@ -89,7 +90,7 @@ public class GUI {
                         String password = userpwd.nextLine();
                         if (password.equalsIgnoreCase("exit")) {
                             System.out.println("You exited the checkLogin at Password to go to the main welcome screen. Good-bye.");
-                            return 0; // goes to the main welcome screen                        
+                            return 0; // goes to the main welcome screen
                         } else if (password.equalsIgnoreCase("exitfull")) {
                             System.out.println("You exited the checkLogin at password to quit the app. Good-bye.");
                             return -1; // quits the app
@@ -109,7 +110,12 @@ public class GUI {
                                 String adminQuery = "SELECT ID From Admin WHERE ID = '" + userID + "'"; // admin query creation 
                                 ResultSet adminSet = adminCheck.executeQuery(adminQuery); //
                                 if (!(adminSet.isBeforeFirst())) {
-                                    int passengerGUIresult = MainPassengerGUI(); // check how this works.
+                                  while(true) {
+                                    int passengerGUIresult = MainPassengerGUI(); // check how this works
+                                    if (passengerGUIresult == 3) {
+                                      int cardSuccess = buyCard(userID);
+                                      System.out.println();
+                                    }
                                     if (passengerGUIresult == 7) { // goto the login screen.
                                         break; // this should break out of the inner loop about the password filling in and go straight to the login screen.
                                     } else if (passengerGUIresult == 8) {
@@ -121,6 +127,7 @@ public class GUI {
                                         System.out.println("Crash app completely.");
                                         System.exit(1); // this breaks the app with no quit screen other than "crash app completely."
                                     }                                
+                                  }    
                                 } else {
                                     System.out.println("admin motherfucker");
                                     isAdmin = true; // set the admin.                                    
@@ -128,13 +135,10 @@ public class GUI {
                                 }                                                                
                             }
                         }
-
                     }
-                }                            
-            }           
+                }
+            }
         }
-        // System.out.println("FOUND AT THE BOTTOM OF CHECKLOGIN WHEN EXIT TYPED IN USERNAME/PASSWORD CHECK");
-        // return 0; // this should never hit.        
     }
 
     public static int MainPassengerGUI() throws Exception { // after login on the user is done.
@@ -143,7 +147,7 @@ public class GUI {
         while(true) {
             System.out.println("------------ MAIN PASSENGER 'GUI' ---------------------");
             System.out.printf("CHOOSE A NUMBER TO EXPLORE DIFFERENT OPTIONS. %n 1. Leave Review %n 2. View Reviews %n 3. Buy Card %n 4. Go On Trip %n 5. View Trips %n"
-                              + " 6. Edit Profile %n 7. Goto Login %n 8. Goto Welcome Screen %n 9. Quit Fully %n");  
+                              + " 6. Edit Profile %n 7. Goto Login %n 8. Goto Welcome Screen %n 9. Quit Fully %n");
             System.out.print("CHOOSE AN OPTION: ");
             int choosePassengerInt = choosePassengerGUI.nextInt(); // same old, basically.
             if (choosePassengerInt == 1) {
@@ -151,9 +155,9 @@ public class GUI {
                 break; //return 0; // leave review
             } else if (choosePassengerInt == 2) {
                 break; //return 0; // view review
-            } else if (choosePassengerInt == 3) { // buy a card.
-                break; //return 0;
-            } else if (choosePassengerInt == 4) { // GO trip
+            } else if (choosePassengerInt == 3) {
+                return 3; //return 3(Go to card purchase screen);
+            } else if (choosePassengerInt == 4) {
                 break; //return 0;
             } else if (choosePassengerInt == 5) { // View Trip
                 break; //return 0;
@@ -179,7 +183,7 @@ public class GUI {
                 return 9;
             } else {
                 System.out.println("You chose an incorrect number. Try again.");
-            }            
+            }
         }
         return 0;
          // breaks out of the big while-loop, will hit if exit at password.
@@ -329,4 +333,96 @@ public class GUI {
          System.out.println("This is the array of stations: " + Arrays.toString(arrStations)); // print array.
          System.exit(1);
      }
+
+    public static int buyCard(String userID) throws Exception {
+        while(true) {
+            System.out.println();
+            System.out.println("CHOOSE 1 FOR T-mes");
+            System.out.println("CHOOSE 2 FOR T-10");
+            System.out.println("CHOOSE 3 FOR T-50/30");
+            System.out.println("CHOOSE 4 FOR T-jove");
+            System.out.println("CHOOSE 5 TO QUIT");
+            System.out.print("ENTER CHOICE: ");
+
+            Scanner ChoiceCardType = new Scanner(System.in); // read in the input; either 1, 2, 3, 4, or 5
+            int ChoiceCardString = ChoiceCardType.nextInt();
+
+            int resultOfPurchase;
+
+            if (ChoiceCardString == 1) {
+                 System.out.println("GO BACK INTO IT, PURCHASE T-mes"); // assume T-mes
+                 return insertCard(userID, "T-mes", "NULL");
+
+                // Statement cardcheck = newConnect.createStatement();
+                // String passQuery = "INSERT INTO Card VALUES ('" + userID + "', 'T-mes', '" + curDate + "', 'N/A', '" + ((curMonth + 1) / 12) + "/" + curDay + "/" + curYear + "')";
+                // ResultSet cardSet = rgstrcheck.executeQuery(passQuery);
+                // String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
+                // ResultSet testSet = rgstrcheck.executeQuery(testQuery);
+
+                // // you decide to exit out of the login screen.
+                // if (resultofLogin == 1) { // if 1, we'll choose to break.
+                //     break;
+                // }
+            } else if (ChoiceCardString == 2) { // assume T-10.
+                System.out.println("GO BACK INTO IT, PURCHASE T-10");
+
+                return insertCard(userID, "T-10", "'10'");
+
+            } else if (ChoiceCardString == 3) { // assume T-50/30.
+                System.out.println("GO BACK INTO IT, PURCHASE T-50/30");
+
+                return insertCard(userID, "T-50/30", "'50'");
+
+            } else if (ChoiceCardString == 4) { //assume T-jove
+                System.out.println("GO BACK INTO IT, PURCHASE T-jove");
+
+                return insertCard(userID, "T-jove", "NULL");
+
+            }  else if (ChoiceCardString == 5) { //assume exit
+                System.out.println("You exited during card purchase. Goodbye");
+                System.exit(1);
+            } else { // assume incorrect input.
+                System.out.println("You entered an incorrect number. Try again. Or quit.");
+                System.out.println("");
+            }
+        }
+
+    }
+
+    public static int insertCard(String userID, String type, String uses) throws Exception{
+        Connection newConnect = getConnection();
+
+        LocalDate localDate = LocalDate.now();
+        int curYear = localDate.getYear();
+        int curMonth = localDate.getMonthValue();
+        int curDay = localDate.getDayOfMonth();
+        int realYear = curYear;
+        String realDay = String.valueOf(curDay);
+        if ((type.equals("T-jove") && curMonth + 3 > 12) || curMonth + 1 > 12) { //checks if expiration date would push year over
+            realYear = curYear + 1;
+        }
+        if (curDay < 10) { //checks if day is single digit so sql will accept it
+            realDay = "0" + realDay;
+        }
+
+        String expDate = type.equals("T-10") ? "NULL" : type.equals("T-jove") ? "'" + realYear + "-" + ((curMonth + 3) % 12) + "-" + realDay + "'" : "'" + realYear + "-" + ((curMonth + 1) % 12) + "-" + realDay + "'";//sets expiration date accomodating for edge cases
+        //String expDate = type.equals("T-10") ? "NULL" : type.equals("T-jove") ? "DATEADD(CAST (sysdate() AS date), INTERVAL 3 month)" : "DATEADD(month, 1, CAST (sysdate() AS date) )";
+        //String expDate = "2020-10-03";
+
+        Statement cardcheck = newConnect.createStatement();
+
+        String passQuery = "INSERT INTO Card VALUES ('" + userID + "', '" + type + "', " + "sysdate()" + ", " + uses + ", " + expDate + ")";//Query to put new card in Card
+        ResultSet cardSet = cardcheck.executeQuery(passQuery);
+        // String testQuery = "SELECT * FROM Card WHERE ID='" + userID + "' AND type_of_card='" + type + "' AND purchase_date_time='" + curDate + "'";
+        // ResultSet testSet = cardcheck.executeQuery(testQuery);
+
+        // if (!(testSet.isBeforeFirst())) {
+        //     System.out.println("Purchase failed");
+        //     System.out.println("-------- RETURNING TO LOGIN SCREEN, PASSWORD DOESN'T MATCH WITH GIVEN USERNAME ---------");
+        // } else {
+            System.out.println("Congrats, you have a card.");
+            return 1;
+            //System.exit(1); // break completely;
+        // }
+    }
 }

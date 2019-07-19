@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.sql.*; // import the big package.
+import java.time.LocalDate;
 public class GUI {
     public static void main(String[] args) throws Exception {
         while (true) {
@@ -200,7 +201,7 @@ public class GUI {
                                                                                             System.out.println("you entered password wrong. try again.");
                                                                                             System.out.println("-------- RETURNING TO LOGIN SCREEN, PASSWORD DOESN'T MATCH WITH GIVEN USERNAME ---------");
                                                                                         } else {
-                                                                                            System.out.println("Congrats, you're now logged in.");
+                                                                                            System.out.println("Congrats, you're now registered.");
                                                                                             System.exit(1); // break completely;
                                                                                         }
                                                                                     }
@@ -225,6 +226,61 @@ public class GUI {
         }
         System.out.println("HITTING LINE OUTSIDE BIG BLOCK, DONE WHEN EXIT TYPED IN USERNAME CHECK");
         return 0; // this should never hit.
+    }
+
+    public static int buyCard(String userID) throws Exception {
+        while(true) {
+            System.out.println();
+            System.out.println("CHOOSE 1 FOR T-mes");
+            System.out.println("CHOOSE 2 FOR T-10");
+            System.out.println("CHOOSE 3 FOR T-50/30");
+            System.out.println("CHOOSE 4 FOR T-jove")
+            System.out.print("ENTER CHOICE: ");
+
+            Scanner ChoiceCardType = new Scanner(System.in); // read in the input; either 1, 2, 3, or 4
+            int ChoiceCardString = ChoiceCardType.nextInt();
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+            LocalDate localDate = LocalDate.now();
+            int curYear = localDate.getYear();
+            int curMonth = localDate.getMonth();
+            int curDay = localDate.getDayOfMont();
+            String curDate = curMonth + "/" + curDay + "/" + curYear;
+
+            int resultOfPurchase;
+
+            if (ChoiceCardString == 1) {
+                System.out.println("GO BACK INTO IT, LOGIN"); // assume login.
+
+                Statement cardcheck = newConnect.createStatement();
+                String passQuery = "INSERT INTO Card VALUES ('" + userID + "', 'T-mes', '" + curDate + "', 'N/A', '" + ((curMonth + 1) / 12) + "/" + curDay + "/" + curYear + "')";
+                ResultSet cardSet = rgstrcheck.executeQuery(passQuery);
+                String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
+                ResultSet testSet = rgstrcheck.executeQuery(testQuery);
+
+                // you decide to exit out of the login screen.
+                if (resultofLogin == 1) { // if 1, we'll choose to break.
+                    break;
+                }
+            } else if (ChoiceCardString == 2) { // assume register.
+                System.out.println("GO BACK INTO IT, REGISTER");
+                int resultofRegister = register(); // do login, and eventually go from there. This int is unnecessary unless
+                // you decide to exit out of the login screen.
+                if (resultofRegister == 1) { // if 1, we'll choose to break.
+                    break;
+                }
+                // goto register.
+            } else if (ChoiceCardString == 3) { // assume exit.
+                System.out.println("Thank you for using our app.");
+                ChoiceIntroPage.close(); // close the scanner.
+                break;
+            } else if (ChoiceCardString == 4) {
+
+            } else { // assume incorrect input.
+                System.out.println("You entered an incorrect number. Try again. Or quit.");
+                System.out.println("");
+            }
+        }
+
     }
 
 }

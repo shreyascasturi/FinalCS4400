@@ -328,10 +328,18 @@ public class GUI {
          Connection newConnection = connection; // pass the connection in.
          // be able to list all the stations
          Statement getAllStations = newConnection.createStatement();
+         Scanner chooseStation = new Scanner(System.in); // you're gonna use this to get the station to work with.
 
+         int shoppingRating = -1; // initialization of ratings stuff.
+         int connectionRating = -1;
+         String nameOfStation = null;
+         String commentLeft = null;
+         
          // We want the stations that are admin-approved AND are on admin-approved lines.
-         String getStationsQuery = "SELECT name FROM Station JOIN Station_On_Line WHERE Station_On_Line.station_name = Station.name"; // this gets us the actual table of names.
-         String getStationQueryNum = "SELECT COUNT(name) FROM Station JOIN Station_On_Line WHERE Station_On_Line.station_name = Station.name"; // this gets us the count.
+         String getStationsQuery = "SELECT name FROM Station ORDER BY name"; // order by name, assume we only have to get from stations.
+         String getStationQueryNum = "SELECT COUNT(name) FROM Station"; // get the count of names.nnn
+         // String getStationsQuery = "SELECT name FROM Station JOIN Station_On_Line WHERE Station_On_Line.station_name = Station.name ORDER BY"; // this gets us the actual table of names.
+         // String getStationQueryNum = "SELECT COUNT(name) FROM Station JOIN Station_On_Line WHERE Station_On_Line.station_name = Station.name"; // this gets us the count.
          ResultSet getStations = getAllStations.executeQuery(getStationsQuery); // get the stations.
          ResultSet getNumStations = getAllStations.executeQuery(getStationQueryNum); // get the count of stations.
          int getNum = -5; // set random num
@@ -345,8 +353,49 @@ public class GUI {
              fillIndex++;
          }
          String actualArray = Arrays.toString(arrStations); // turn this into a printable thing. finally, fucking use ARRAYS.
-         System.out.println("This is the array of stations: " + Arrays.toString(arrStations)); // print array.
-         System.exit(1);
+         System.out.println("ARRAY FOR STATIONS: " + Arrays.toString(arrStations)); // print array.
+
+         while(true) { // a massive loop because fuck me
+             System.out.print("CHOOSE BY INDEX YOUR STATION; 0 BEING FIRST, N - 1 BEING THE NTH: "); // choose by INDEX from the array.
+             int getInt = chooseStation.nextInt();
+             if (getInt < 0 || getInt >= getNum) {
+                 System.out.println("Pick a number greater than 0 and less than or equal to n-1."); // check invalid INDEX
+             } else {
+                 shoppingRating = -1; // assume we did get valid index, set shopping and connection ratings.
+                 connectionRating = -1;
+                 while(true) { // these smaller and smaller infinite loops restrict our errors, so making one error forces us to solve that
+                     // one error before moving on, input-wise.
+                     System.out.print("CHOOSE A SHOPPING RATING FROM 0 TO 5: ");
+                     shoppingRating = chooseStation.nextInt();
+                     if (shoppingRating < 0 || shoppingRating > 5) {
+                         System.out.println("Choose a valid rating."); // valid check on shopping rating.
+                     } else {
+                         while(true) {
+                             System.out.print("CHOOSE A CONNECTION RATING FROM 0 TO 5: "); // valid check on 
+                             connectionRating = chooseStation.nextInt();
+                             if (connectionRating < 0 || connectionRating > 5) {
+                                 System.out.println("Choose a valid number");
+                             } else {
+                                 Scanner captureReview = new Scanner(System.in);
+                                 System.out.print("LEAVE A COMMENT ABOUT THE STATION (OPTIONAL): ");
+                                 commentLeft = captureReview.nextLine();
+                                 if (commentLeft.length() == 0 || commentLeft.equals("NULL")) {
+                                     commentLeft = "NULL";
+                                 }
+                                 // TODO: OBTAIN THE NEW RID BY GETTING ALL REVIEWS BY A PARTICULAR USER AND GETTING THE MAX
+                                 // NUMBER OF THOSE RIDS, ADD 1 TO GET THE NEW RID - IT'S A NEW REVIEW.
+                                 // TODO: WRITE THE QUERY TO ADD EVERYTHING AS A REVIEW TUPLE.
+                                 // TODO: TEST AND SEE IF THIS WORKS
+                             }
+                         }
+                     }
+                 }
+                             
+             }
+
+         }
+         
+         //System.exit(1); // exit for now.
      }
 
     public static int buyCard(String userID) throws Exception {

@@ -1,6 +1,8 @@
 import java.util.Scanner;
 import java.sql.*; // import the big package.
 public class GUI {
+    public static String userID = ""; // set the basic String.
+    public static boolean isAdmin  = false; // set the boolean as false.
     public static void main(String[] args) throws Exception {
         while (true) {
             //Scanner ChoiceIntroPage = new Scanner(System.in);
@@ -25,14 +27,14 @@ public class GUI {
                 System.out.println("GO BACK INTO IT, REGISTER");
                 int resultofRegister = register(); // do login, and eventually go from there. This int is unnecessary unless
                 // you decide to exit out of the login screen.
-                if (resultofRegister == 1) { // if 1, we'll choose to break.
+                if (resultofRegister == -1) { // if -1, we'll choose to break.
                     break;
                 }
                 // goto register.
             } else if (ChoiceIntroString == 3) { // assume exit solely chosen in the choice intro page
                 System.out.println("Thank you for using our app.");
                 ChoiceIntroPage.close(); // close the scanner.
-                break;
+                System.exit(1); // end immediately here.
             } else { // assume incorrect input.
                 System.out.println("You entered an incorrect number. Try again. Or quit.");
                 System.out.println("");
@@ -60,9 +62,9 @@ public class GUI {
 
     public static int checkLogin() throws Exception {
         Connection newConnect = getConnection(); // check getConnection;
-        Scanner userpwd = new Scanner(System.in); // login username/pwd scanner.
-        System.out.println("----------- LOGIN SCREEN -------------");
+        Scanner userpwd = new Scanner(System.in); // login username/pwd scanner.        
         while (true) { // this keeps repeating if your username is wrong/doesn't exist in the database.
+            System.out.println("----------- LOGIN SCREEN -------------");
             System.out.print("ENTER YOUR USERNAME: ");
             String username = userpwd.nextLine(); // get the username. // test "chal68";
             if (username.equalsIgnoreCase("exit")) {
@@ -99,19 +101,29 @@ public class GUI {
                                 System.out.println("-------- RETURNING TO LOGIN SCREEN, PASSWORD DOESN'T MATCH WITH GIVEN USERNAME ---------");
                             } else {
                                 System.out.println("Congrats, you're now logged in.");
-                                int passengerGUIresult = MainPassengerGUI(); // check how this works.
-                                if (passengerGUIresult == 7) { // goto the login screen.
-                                    break; // this should break out of the inner loop about the password filling in and go straight to the login screen.
-                                } else if (passengerGUIresult == 8) {
-                                    return 0; // this takes us to the welcome screen.
-                                } else if (passengerGUIresult == 9) {
-                                    return -1; // this quits the app and gives us the quit screen.
+                                System.out.println("Checking admin now...");
+                                userID = username; // set the static variable as username.
+                                Statement adminCheck = newConnect.createStatement(); // create new statement for admin check.
+                                String adminQuery = "SELECT ID From Admin WHERE ID = '" + userID + "'"; // admin query creation 
+                                ResultSet adminSet = adminCheck.executeQuery(adminQuery); //
+                                if (!(adminSet.isBeforeFirst())) {
+                                    int passengerGUIresult = MainPassengerGUI(); // check how this works.
+                                    if (passengerGUIresult == 7) { // goto the login screen.
+                                        break; // this should break out of the inner loop about the password filling in and go straight to the login screen.
+                                    } else if (passengerGUIresult == 8) {
+                                        return 0; // this takes us to the welcome screen.
+                                    } else if (passengerGUIresult == 9) {
+                                        return -1; // this quits the app and gives us the quit screen.
+                                    } else {
+                                        System.out.println("This should never be reached at all. This is in the passengerGui check in checkLogin.");
+                                        System.out.println("Crash app completely.");
+                                        System.exit(1); // this breaks the app with no quit screen other than "crash app completely."
+                                    }                                
                                 } else {
-                                    System.out.println("This should never be reached at all. This is in the passengerGui check in checkLogin.");
-                                    System.out.println("Crash app completely.");
-                                    System.exit(1); // this breaks the app with no quit screen other than "crash app completely."
-                                }                                
-                                //System.exit(1); // break completely;
+                                    System.out.println("admin motherfucker");
+                                    isAdmin = true; // set the admin.                                    
+                                    System.exit(1);                                    
+                                }                                                                
                             }
                         }
 
@@ -136,19 +148,31 @@ public class GUI {
                 break; //return 0; // leave review
             } else if (choosePassengerInt == 2) {
                 break; //return 0; // view review
-            } else if (choosePassengerInt == 3) {
+            } else if (choosePassengerInt == 3) { // buy a card.
                 break; //return 0;
             } else if (choosePassengerInt == 4) {
                 break; //return 0;
             } else if (choosePassengerInt == 5) {
                 break; //return 0;
-            } else if (choosePassengerInt == 6) {
+            } else if (choosePassengerInt == 6) { // edit profile
                 break; //return 0;
-            } else if (choosePassengerInt == 7) { // goto login screen.
+            } else if (choosePassengerInt == 7) { // goto login screen. this means logout.
+                System.out.println("------------LOGGING OUT GOTO LOGIN SCREEN------------");
+                System.out.println("");
+                userID = ""; // reset as empty.
+                isAdmin = false; // reset as false even though it is false.
                 return 7;
-            } else if (choosePassengerInt == 8) { // goto welcome screen
+            } else if (choosePassengerInt == 8) { // goto welcome screen // means we must logout.
+                System.out.println("------------LOGGING OUT GOTO WELCOME SCREEN------------");
+                System.out.println("");
+                userID = "";
+                isAdmin = false;
                 return 8;
-            } else if (choosePassengerInt == 9) { // quit fully.
+            } else if (choosePassengerInt == 9) { // quit fully. full logout as well.
+                System.out.println("------------LOGGING OUT EXIT FULLY------------");
+                System.out.println("");
+                userID = "";
+                isAdmin = false;
                 return 9;
             } else {
                 System.out.println("You chose an incorrect number. Try again.");
@@ -157,9 +181,6 @@ public class GUI {
         return 0;
          // breaks out of the big while-loop, will hit if exit at password.
     }
-
-         
-
 
     public static int register() throws Exception {
         Connection newConnect = getConnection();
@@ -281,6 +302,8 @@ public class GUI {
         return 0; // this should never hit.
     }
 
+    // public static int leaveReview(Connection connection) { // leave reviews, USER/ADMIN
+    //     Connection newConnection = connection; // pass the connection in.
+    //     // be able to list all the databases.
+    // }
 }
-
-

@@ -18,9 +18,9 @@ public class GUI {
                 System.out.println("GO BACK INTO IT, LOGIN"); // assume login.
                 int resultofLogin = checkLogin(); // do login, and eventually go from there. This int is unnecessary unless
                 // you decide to exit out of the login screen.
-                if (resultofLogin == 1) { // if 1, we'll choose to break.
-                    break;
-                }
+                if (resultofLogin == -1) { // if -1, we'll choose to break. Zeroes and other things continue the outer loop.
+                    break; // this ends the app.
+                } 
             } else if (ChoiceIntroString == 2) { // assume register.
                 System.out.println("GO BACK INTO IT, REGISTER");
                 int resultofRegister = register(); // do login, and eventually go from there. This int is unnecessary unless
@@ -29,7 +29,7 @@ public class GUI {
                     break;
                 }
                 // goto register.
-            } else if (ChoiceIntroString == 3) { // assume exit.
+            } else if (ChoiceIntroString == 3) { // assume exit solely chosen in the choice intro page
                 System.out.println("Thank you for using our app.");
                 ChoiceIntroPage.close(); // close the scanner.
                 break;
@@ -38,7 +38,8 @@ public class GUI {
                 System.out.println("");
             }
         }
-
+        System.out.println("Thank you for using our app."); // exit screen obtained from exiting from other places.
+        System.exit(1); // to make sure this works.
     }
 
     public static Connection getConnection() throws Exception { // open a Connection to the database.
@@ -65,12 +66,15 @@ public class GUI {
             System.out.print("ENTER YOUR USERNAME: ");
             String username = userpwd.nextLine(); // get the username. // test "chal68";
             if (username.equalsIgnoreCase("exit")) {
-                System.out.println("You exited the checkLogin at User. Good-bye.");
-                break; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
+                System.out.println("You exited the checkLogin at User, going back to the main welcome screen. Good-bye.");
+                return 0; // go to the main welcome screen.
+            } else if (username.equalsIgnoreCase("exitfull")) {
+                System.out.println("You exited the checkLogin at User, basically ending your usage of the app. Good-bye.");
+                return -1; // quit the app.
             } else {
                 //System.out.println(""); // need to go down.
                 Statement usercheck = newConnect.createStatement(); // we create a statement to be used.
-                String userQuery = "SELECT ID FROM User WHERE ID = '" + username + "'"; // create the query and then execute.
+                String userQuery = "SELECT ID FROM User WHERE ID = '" + username + "'"; // create the query and then execute. QUERY TO CHECK USERNAME VALIDITY
                 ResultSet userSet = usercheck.executeQuery(userQuery); // see? Get the results as a ResultSet.
                 if (!(userSet.isBeforeFirst())) { // i'm not gonna explain this one... but... if the set has no rows, then the set is empty.
                     System.out.println("you failed. Username is incorrect. Try again."); // if the set is empty... then the username is wrong.
@@ -80,31 +84,78 @@ public class GUI {
                         System.out.print("ENTER YOUR PASSWORD: "); // enter the password. test "eightchar".
                         String password = userpwd.nextLine();
                         if (password.equalsIgnoreCase("exit")) {
-                            System.out.println("You exited the checkLogin at Password. Good-bye.");
-                            break;
+                            System.out.println("You exited the checkLogin at Password to go to the main welcome screen. Good-bye.");
+                            return 0; // goes to the main welcome screen                        
+                        } else if (password.equalsIgnoreCase("exitfull")) {
+                            System.out.println("You exited the checkLogin at password to quit the app. Good-bye.");
+                            return -1; // quits the app
                         } else {
                             System.out.println("");
                             Statement pwdcheck = newConnect.createStatement();
-                            String passQuery = "SELECT password FROM User WHERE ID = '" + username + "' AND password = '" + password + "'";
+                            String passQuery = "SELECT password FROM User WHERE ID = '" + username + "' AND password = '" + password + "'"; // QUERY TO CHECK USERNAME + PWD VALIDITY
                             ResultSet pwdSet = pwdcheck.executeQuery(passQuery);
                             if (!(pwdSet.isBeforeFirst())) {
                                 System.out.println("you entered password wrong. try again.");
                                 System.out.println("-------- RETURNING TO LOGIN SCREEN, PASSWORD DOESN'T MATCH WITH GIVEN USERNAME ---------");
                             } else {
                                 System.out.println("Congrats, you're now logged in.");
-                                System.exit(1); // break completely;
+                                int passengerGUIresult = MainPassengerGUI(); // check how this works.
+                                if (passengerGUIresult == 7) { // goto the login screen.
+                                    break; // this should break out of the inner loop about the password filling in and go straight to the login screen.
+                                } else if (passengerGUIresult == 8) {
+                                    return 0; // this takes us to the welcome screen.
+                                } else if (passengerGUIresult == 9) {
+                                    return -1; // this quits the app and gives us the quit screen.
+                                } else {
+                                    System.out.println("This should never be reached at all. This is in the passengerGui check in checkLogin.");
+                                    System.out.println("Crash app completely.");
+                                    System.exit(1); // this breaks the app with no quit screen other than "crash app completely."
+                                }                                
+                                //System.exit(1); // break completely;
                             }
                         }
 
                     }
-                    break; // breaks out of the big while-loop, will hit if exit at password.
-                }
+                }                            
+            }           
+                    
+           }
+           
+    }
 
-            }
+    public static int MainPassengerGUI() throws Exception { // after login on the user is done.
+        Connection newConnect = getConnection();
+        Scanner choosePassengerGUI = new Scanner(System.in);
+        while(true) {
+            System.out.println("------------ MAIN PASSENGER 'GUI' ---------------------");
+            System.out.printf("CHOOSE A NUMBER TO EXPLORE DIFFERENT OPTIONS. %n 1. Leave Review %n 2. View Reviews %n 3. Buy Card %n 4. Go On Trip %n 5. View Trips %n"
+                              + " 6. Edit Profile %n 7. Goto Login %n 8. Goto Welcome Screen %n 9. Quit Fully %n");  
+            System.out.print("CHOOSE AN OPTION: ");
+            int choosePassengerInt = choosePassengerGUI.nextInt(); // same old, basically.
+            if (choosePassengerInt == 1) {
+                break; //return 0; // leave review
+            } else if (choosePassengerInt == 2) {
+                break; //return 0; // view review
+            } else if (choosePassengerInt == 3) {
+                break; //return 0;
+            } else if (choosePassengerInt == 4) {
+                break; //return 0;
+            } else if (choosePassengerInt == 5) {
+                break; //return 0;
+            } else if (choosePassengerInt == 6) {
+                break; //return 0;
+            } else if (choosePassengerInt == 7) { // goto login screen.
+                return 7;
+            } else if (choosePassengerInt == 8) { // goto welcome screen
+                return 8;
+            } else if (choosePassengerInt == 9) { // quit fully.
+                return 9;
+            } else {
+                System.out.println("You chose an incorrect number. Try again.");
+            }            
         }
-        System.out.println("HITTING LINE OUTSIDE BIG BLOCK, DONE WHEN EXIT TYPED IN USERNAME CHECK");
-        return 0; // this should never hit.
-
+        return 0;
+         // breaks out of the big while-loop, will hit if exit at password.
     }
 
     public static int register() throws Exception {
@@ -228,5 +279,3 @@ public class GUI {
     }
 
 }
-
-

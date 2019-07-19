@@ -23,6 +23,11 @@ public class GUI {
                 } 
             } else if (ChoiceIntroString == 2) { // assume register.
                 System.out.println("GO BACK INTO IT, REGISTER");
+                int resultofRegister = register(); // do login, and eventually go from there. This int is unnecessary unless
+                // you decide to exit out of the login screen.
+                if (resultofRegister == 1) { // if 1, we'll choose to break.
+                    break;
+                }
                 // goto register.
             } else if (ChoiceIntroString == 3) { // assume exit solely chosen in the choice intro page
                 System.out.println("Thank you for using our app.");
@@ -31,7 +36,7 @@ public class GUI {
             } else { // assume incorrect input.
                 System.out.println("You entered an incorrect number. Try again. Or quit.");
                 System.out.println("");
-            }            
+            }
         }
         System.out.println("Thank you for using our app."); // exit screen obtained from exiting from other places.
         System.exit(1); // to make sure this works.
@@ -69,7 +74,7 @@ public class GUI {
             } else {
                 //System.out.println(""); // need to go down.
                 Statement usercheck = newConnect.createStatement(); // we create a statement to be used.
-                String userQuery = "SELECT ID FROM User WHERE ID = '" + username + "'"; // create the query and then execute.
+                String userQuery = "SELECT ID FROM User WHERE ID = '" + username + "'"; // create the query and then execute. QUERY TO CHECK USERNAME VALIDITY
                 ResultSet userSet = usercheck.executeQuery(userQuery); // see? Get the results as a ResultSet.
                 if (!(userSet.isBeforeFirst())) { // i'm not gonna explain this one... but... if the set has no rows, then the set is empty.
                     System.out.println("you failed. Username is incorrect. Try again."); // if the set is empty... then the username is wrong.
@@ -87,11 +92,11 @@ public class GUI {
                         } else {
                             System.out.println("");
                             Statement pwdcheck = newConnect.createStatement();
-                            String passQuery = "SELECT password FROM User WHERE ID = '" + username + "' AND password = '" + password + "'";
+                            String passQuery = "SELECT password FROM User WHERE ID = '" + username + "' AND password = '" + password + "'"; // QUERY TO CHECK USERNAME + PWD VALIDITY
                             ResultSet pwdSet = pwdcheck.executeQuery(passQuery);
                             if (!(pwdSet.isBeforeFirst())) {
                                 System.out.println("you entered password wrong. try again.");
-                                System.out.println("-------- RETURNING TO LOGIN SCREEN, PASSWORD DOESN'T MATCH WITH GIVEN USERNAME ---------");                        
+                                System.out.println("-------- RETURNING TO LOGIN SCREEN, PASSWORD DOESN'T MATCH WITH GIVEN USERNAME ---------");
                             } else {
                                 System.out.println("Congrats, you're now logged in.");
                                 int passengerGUIresult = MainPassengerGUI(); // check how this works.
@@ -150,6 +155,132 @@ public class GUI {
             }            
         }
         return 0;
+         // breaks out of the big while-loop, will hit if exit at password.
     }
-   
+
+         
+
+
+    public static int register() throws Exception {
+        Connection newConnect = getConnection();
+        Scanner registration = new Scanner(System.in);
+
+        String firstName;
+        String mi;
+        String lastName;
+        String email;
+        String userID;
+        String pass1;
+        String pass2;
+
+        while(true) {
+            System.out.print("ENTER FIRST NAME: ");
+            firstName = registration.nextLine();
+            if (firstName.equalsIgnoreCase("exit")) {
+                System.out.println("You exited the registration at FirstName. Good-bye.");
+                break; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
+            } else {
+                if (firstName.length() == 0) {
+                    System.out.println("Type a first name please");
+                } else {
+                    while (true) {
+                        System.out.println("ENTER MIDDLE INITIAL: ");
+                        String middleI = registration.nextLine();
+                        mi = middleI.length() == 0 ? null : middleI;
+                        if (mi.equalsIgnoreCase("exit")) {
+                            System.out.println("You exited the registration at Middle Initial. Good-bye.");
+                            break; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
+                        } else {
+                            while (true) {
+                                System.out.println("ENTER LAST NAME: ");
+                                lastName = registration.nextLine();
+                                if (lastName.equalsIgnoreCase("exit")) {
+                                    System.out.println("You exited the registration at LastName. Good-bye.");
+                                    break;
+                                } else {
+                                    if (lastName.length() == 0) {
+                                        System.out.println("Type a last name please");
+                                    } else {
+                                        while (true) {
+                                            System.out.println("ENTER EMAIL: ");
+                                            email = registration.nextLine();
+                                            if (email.equalsIgnoreCase("exit")) {
+                                                System.out.println("You exited the registration at Email. Good-bye.");
+                                                break;
+                                            } else {
+                                                if (email.length() == 0) {
+                                                    System.out.println("Type an email please");
+                                                } else {
+                                                    while (true) {
+                                                        System.out.println("ENTER USERID: ");
+                                                        userID = registration.nextLine();
+                                                        if (userID.equalsIgnoreCase("exit")) {
+                                                            System.out.println("You exited the registration at UserID. Good-bye.");
+                                                            break;
+                                                        } else {
+                                                            if (userID.length() == 0) {
+                                                                System.out.println("Type a UserID please");
+                                                            } else {
+                                                                while (true) {
+                                                                    System.out.println("ENTER PASSWORD: ");
+                                                                    pass1 = registration.nextLine();
+                                                                    if (pass1.equalsIgnoreCase("exit")) {
+                                                                        System.out.println("You exited the registration at Password. Good-bye.");
+                                                                        break;
+                                                                    } else {
+                                                                        if (pass1.length() == 0) {
+                                                                            System.out.println("Type a password please");
+                                                                        } else {
+                                                                            while (true) {
+                                                                                System.out.println("RE-ENTER PASSWORD: ");
+                                                                                pass2 = registration.nextLine();
+                                                                                if (pass2.equalsIgnoreCase("exit")) {
+                                                                                    System.out.println("You exited the registration at Password. Good-bye.");
+                                                                                    break;
+                                                                                } else {
+                                                                                    if (pass2.length() == 0) {
+                                                                                        System.out.println("Type a Password please");
+                                                                                    } else if (!pass1.equals(pass2)) {
+                                                                                        System.out.print("Make sure the passwords match");
+                                                                                    } else {
+                                                                                        System.out.println("");
+                                                                                        Statement rgstrcheck = newConnect.createStatement();
+                                                                                        String passQuery = "INSERT INTO User VALUES ('" + userID + "', '" + firstName + "', '" + mi + "', '" + lastName + "', '" + pass1 + "', '" + email + "')";
+                                                                                        ResultSet rgstrSet = rgstrcheck.executeQuery(passQuery);
+                                                                                        String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
+                                                                                        ResultSet testSet = rgstrcheck.executeQuery(testQuery);
+
+                                                                                        if (!(testSet.isBeforeFirst())) {
+                                                                                            System.out.println("you entered password wrong. try again.");
+                                                                                            System.out.println("-------- RETURNING TO LOGIN SCREEN, PASSWORD DOESN'T MATCH WITH GIVEN USERNAME ---------");
+                                                                                        } else {
+                                                                                            System.out.println("Congrats, you're now logged in.");
+                                                                                            System.exit(1); // break completely;
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        System.out.println("HITTING LINE OUTSIDE BIG BLOCK, DONE WHEN EXIT TYPED IN USERNAME CHECK");
+        return 0; // this should never hit.
+    }
+
 }
+
+

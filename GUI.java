@@ -1,7 +1,11 @@
 import java.util.Scanner;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.sql.*; // import the big package.
 import java.time.LocalDate;
 public class GUI {
+    public static String userID = ""; // set the basic String.
+    public static boolean isAdmin  = false; // set the boolean as false.
     public static void main(String[] args) throws Exception {
         while (true) {
             //Scanner ChoiceIntroPage = new Scanner(System.in);
@@ -26,14 +30,14 @@ public class GUI {
                 System.out.println("GO BACK INTO IT, REGISTER");
                 int resultofRegister = register(); // do login, and eventually go from there. This int is unnecessary unless
                 // you decide to exit out of the login screen.
-                if (resultofRegister == 1) { // if 1, we'll choose to break.
+                if (resultofRegister == -1) { // if -1, we'll choose to break.
                     break;
                 }
                 // goto register.
             } else if (ChoiceIntroString == 3) { // assume exit solely chosen in the choice intro page
                 System.out.println("Thank you for using our app.");
                 ChoiceIntroPage.close(); // close the scanner.
-                break;
+                System.exit(1); // end immediately here.
             } else { // assume incorrect input.
                 System.out.println("You entered an incorrect number. Try again. Or quit.");
                 System.out.println("");
@@ -61,9 +65,9 @@ public class GUI {
 
     public static int checkLogin() throws Exception {
         Connection newConnect = getConnection(); // check getConnection;
-        Scanner userpwd = new Scanner(System.in); // login username/pwd scanner.
-        System.out.println("----------- LOGIN SCREEN -------------");
+        Scanner userpwd = new Scanner(System.in); // login username/pwd scanner.        
         while (true) { // this keeps repeating if your username is wrong/doesn't exist in the database.
+            System.out.println("----------- LOGIN SCREEN -------------");
             System.out.print("ENTER YOUR USERNAME: ");
             String username = userpwd.nextLine(); // get the username. // test "chal68";
             if (username.equalsIgnoreCase("exit")) {
@@ -100,12 +104,19 @@ public class GUI {
                                 System.out.println("-------- RETURNING TO LOGIN SCREEN, PASSWORD DOESN'T MATCH WITH GIVEN USERNAME ---------");
                             } else {
                                 System.out.println("Congrats, you're now logged in.");
-                                while (true) { //returns you to MainPassengerGUI after an action so you don't have to log in again
-                                    int passengerGUIresult = MainPassengerGUI(); // check how this works.
+                                System.out.println("Checking admin now...");
+                                userID = username; // set the static variable as username.
+                                Statement adminCheck = newConnect.createStatement(); // create new statement for admin check.
+                                String adminQuery = "SELECT ID From Admin WHERE ID = '" + userID + "'"; // admin query creation 
+                                ResultSet adminSet = adminCheck.executeQuery(adminQuery); //
+                                if (!(adminSet.isBeforeFirst())) {
+                                  while(true) {
+                                    int passengerGUIresult = MainPassengerGUI(); // check how this works
                                     if (passengerGUIresult == 3) {
-                                        int cardSuccess = buyCard(username); // this should take us to the card purchase screen
-                                        System.out.println();
-                                    } else if (passengerGUIresult == 7) { // goto the login screen.
+                                      int cardSuccess = buyCard(userID);
+                                      System.out.println();
+                                    }
+                                    if (passengerGUIresult == 7) { // goto the login screen.
                                         break; // this should break out of the inner loop about the password filling in and go straight to the login screen.
                                     } else if (passengerGUIresult == 8) {
                                         return 0; // this takes us to the welcome screen.
@@ -115,18 +126,19 @@ public class GUI {
                                         System.out.println("This should never be reached at all. This is in the passengerGui check in checkLogin.");
                                         System.out.println("Crash app completely.");
                                         System.exit(1); // this breaks the app with no quit screen other than "crash app completely."
-                                    }
-                                }
-                                //System.exit(1); // break completely;
+                                    }                                
+                                  }    
+                                } else {
+                                    System.out.println("admin motherfucker");
+                                    isAdmin = true; // set the admin.                                    
+                                    System.exit(1);                                    
+                                }                                                                
                             }
                         }
-
                     }
                 }
             }
-
-           }
-
+        }
     }
 
     public static int MainPassengerGUI() throws Exception { // after login on the user is done.
@@ -139,6 +151,7 @@ public class GUI {
             System.out.print("CHOOSE AN OPTION: ");
             int choosePassengerInt = choosePassengerGUI.nextInt(); // same old, basically.
             if (choosePassengerInt == 1) {
+                leaveReview(newConnect);
                 break; //return 0; // leave review
             } else if (choosePassengerInt == 2) {
                 break; //return 0; // view review
@@ -146,15 +159,27 @@ public class GUI {
                 return 3; //return 3(Go to card purchase screen);
             } else if (choosePassengerInt == 4) {
                 break; //return 0;
-            } else if (choosePassengerInt == 5) {
+            } else if (choosePassengerInt == 5) { // View Trip
                 break; //return 0;
-            } else if (choosePassengerInt == 6) {
+            } else if (choosePassengerInt == 6) { // edit profile
                 break; //return 0;
-            } else if (choosePassengerInt == 7) { // goto login screen.
+            } else if (choosePassengerInt == 7) { // goto login screen. this means logout.
+                System.out.println("------------LOGGING OUT GOTO LOGIN SCREEN------------");
+                System.out.println("");
+                userID = ""; // reset as empty.
+                isAdmin = false; // reset as false even though it is false.
                 return 7;
-            } else if (choosePassengerInt == 8) { // goto welcome screen
+            } else if (choosePassengerInt == 8) { // goto welcome screen // means we must logout.
+                System.out.println("------------LOGGING OUT GOTO WELCOME SCREEN------------");
+                System.out.println("");
+                userID = "";
+                isAdmin = false;
                 return 8;
-            } else if (choosePassengerInt == 9) { // quit fully.
+            } else if (choosePassengerInt == 9) { // quit fully. full logout as well.
+                System.out.println("------------LOGGING OUT EXIT FULLY------------");
+                System.out.println("");
+                userID = "";
+                isAdmin = false;
                 return 9;
             } else {
                 System.out.println("You chose an incorrect number. Try again.");
@@ -283,6 +308,31 @@ public class GUI {
         System.out.println("HITTING LINE OUTSIDE BIG BLOCK, DONE WHEN EXIT TYPED IN USERNAME CHECK");
         return 0; // this should never hit.
     }
+
+    public static void leaveReview(Connection connection) throws Exception { // leave reviews, USER/ADMIN
+         Connection newConnection = connection; // pass the connection in.
+         // be able to list all the stations
+         Statement getAllStations = newConnection.createStatement();
+
+         // We want the stations that are admin-approved AND are on admin-approved lines.
+         String getStationsQuery = "SELECT name FROM Station JOIN Station_On_Line WHERE Station_On_Line.station_name = Station.name"; // this gets us the actual table of names.
+         String getStationQueryNum = "SELECT COUNT(name) FROM Station JOIN Station_On_Line WHERE Station_On_Line.station_name = Station.name"; // this gets us the count.
+         ResultSet getStations = getAllStations.executeQuery(getStationsQuery); // get the stations.
+         ResultSet getNumStations = getAllStations.executeQuery(getStationQueryNum); // get the count of stations.
+         int getNum = -5; // set random num
+         while(getNumStations.next()) {
+             getNum = Integer.parseInt(getNumStations.getString("COUNT(name)")); // getNum = count of stations.
+         }
+         String[] arrStations = new String[getNum]; // create string array to hold the names of the stations
+         int fillIndex = 0; // simple loop to go through ResultSet getStations.
+         while (getStations.next()) {
+             arrStations[fillIndex] = getStations.getString("name"); // get the value out of the column "name"
+             fillIndex++;
+         }
+         String actualArray = Arrays.toString(arrStations); // turn this into a printable thing. finally, fucking use ARRAYS.
+         System.out.println("This is the array of stations: " + Arrays.toString(arrStations)); // print array.
+         System.exit(1);
+     }
 
     public static int buyCard(String userID) throws Exception {
         while(true) {

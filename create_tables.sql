@@ -133,6 +133,12 @@ INSERT INTO User VALUES("chal68", "Charles", "J", "Hall", "eightchar", "scasturi
        password constraint holds.*/
 INSERT INTO User VALUES("AMERICA", "AM", "E", "RICA", "notefxxx", "america.gmail.com");
 INSERT INTO User VALUES("shcar", "Shreyas", "R", "Casturi", "chareno", "american@gatech.edu"); /* should not be added.*/
+INSERT INTO Station VALUES("Arc", "open", "GA", "2714 Something", "30062", "Marietta");
+INSERT INTO Station VALUES("Not arc", "closed", "GA", "AMERICA", "3063", "WHAT");
+INSERT INTO Station VALUES("random arc", "open", "CA", "AMERICA", "40333", "JM");
+INSERT INTO Line VALUES("The Test Line"); /*testing line and station for reviews.*/
+INSERT INTO Station_On_Line VALUES("Arc", "The Test Line", 3);
+INSERT INTO Station_On_Line VALUES("Not arc", "The Test Line", 2);
 /*INSERT INTO Card VALUES("chal68", "T-mes", SYSDATE())
 INSERT INTO Card VALUES("chal68", "T-mes", 20191212)*/
 /*INSERT INTO Card VALUES("chal68", "T-mes", 20190506, 50, 20191213);*/

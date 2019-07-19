@@ -1,4 +1,6 @@
 import java.util.Scanner;
+import java.util.Arrays;
+import java.util.ArrayList;
 import java.sql.*; // import the big package.
 public class GUI {
     public static String userID = ""; // set the basic String.
@@ -145,14 +147,15 @@ public class GUI {
             System.out.print("CHOOSE AN OPTION: ");
             int choosePassengerInt = choosePassengerGUI.nextInt(); // same old, basically.
             if (choosePassengerInt == 1) {
+                leaveReview(newConnect);
                 break; //return 0; // leave review
             } else if (choosePassengerInt == 2) {
                 break; //return 0; // view review
             } else if (choosePassengerInt == 3) { // buy a card.
                 break; //return 0;
-            } else if (choosePassengerInt == 4) {
+            } else if (choosePassengerInt == 4) { // GO trip
                 break; //return 0;
-            } else if (choosePassengerInt == 5) {
+            } else if (choosePassengerInt == 5) { // View Trip
                 break; //return 0;
             } else if (choosePassengerInt == 6) { // edit profile
                 break; //return 0;
@@ -207,7 +210,7 @@ public class GUI {
                     while (true) {
                         System.out.println("ENTER MIDDLE INITIAL: ");
                         String middleI = registration.nextLine();
-                        mi = middleI.length() == 0 ? null : middleI;
+                        mi = middleI.length() == 0 ? "NULL" : middleI;
                         if (mi.equalsIgnoreCase("exit")) {
                             System.out.println("You exited the registration at Middle Initial. Good-bye.");
                             break; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
@@ -302,8 +305,28 @@ public class GUI {
         return 0; // this should never hit.
     }
 
-    // public static int leaveReview(Connection connection) { // leave reviews, USER/ADMIN
-    //     Connection newConnection = connection; // pass the connection in.
-    //     // be able to list all the databases.
-    // }
+    public static void leaveReview(Connection connection) throws Exception { // leave reviews, USER/ADMIN
+         Connection newConnection = connection; // pass the connection in.
+         // be able to list all the stations
+         Statement getAllStations = newConnection.createStatement();
+
+         // We want the stations that are admin-approved AND are on admin-approved lines.
+         String getStationsQuery = "SELECT name FROM Station JOIN Station_On_Line WHERE Station_On_Line.station_name = Station.name"; // this gets us the actual table of names.
+         String getStationQueryNum = "SELECT COUNT(name) FROM Station JOIN Station_On_Line WHERE Station_On_Line.station_name = Station.name"; // this gets us the count.
+         ResultSet getStations = getAllStations.executeQuery(getStationsQuery); // get the stations.
+         ResultSet getNumStations = getAllStations.executeQuery(getStationQueryNum); // get the count of stations.
+         int getNum = -5; // set random num
+         while(getNumStations.next()) {
+             getNum = Integer.parseInt(getNumStations.getString("COUNT(name)")); // getNum = count of stations.
+         }
+         String[] arrStations = new String[getNum]; // create string array to hold the names of the stations
+         int fillIndex = 0; // simple loop to go through ResultSet getStations.
+         while (getStations.next()) {
+             arrStations[fillIndex] = getStations.getString("name"); // get the value out of the column "name"
+             fillIndex++;
+         }
+         String actualArray = Arrays.toString(arrStations); // turn this into a printable thing. finally, fucking use ARRAYS.
+         System.out.println("This is the array of stations: " + Arrays.toString(arrStations)); // print array.
+         System.exit(1);
+     }
 }

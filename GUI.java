@@ -118,9 +118,9 @@ public class GUI {
                     }
                 }                            
             }           
-        }
-        // System.out.println("FOUND AT THE BOTTOM OF CHECKLOGIN WHEN EXIT TYPED IN USERNAME/PASSWORD CHECK");
-        // return 0; // this should never hit.        
+                    
+           }
+           
     }
 
     public static int MainPassengerGUI() throws Exception { // after login on the user is done.
@@ -157,9 +157,6 @@ public class GUI {
         return 0;
          // breaks out of the big while-loop, will hit if exit at password.
     }
-
-         
-
 
     public static int register() throws Exception {
         Connection newConnect = getConnection();
@@ -282,5 +279,3 @@ public class GUI {
     }
 
 }
-
-

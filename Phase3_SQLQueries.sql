@@ -45,7 +45,7 @@ SELECT CONCAT(User.first_name, '', User.last_name) FROM User WHERE User.ID = '';
 # display all stations in alphabetical order
 SELECT name FROM Station ORDER BY Station.name;
 # insert a review into the Review table
-INSERT into Review VALUES("AMERICA", 101, 3, 4, "", "shcar", "pending", NULL, 'Arc de Triomf');
+INSERT INTO Review VALUES("AMERICA", 101, 3, 4, "", "shcar", "pending", NULL, 'Arc de Triomf');
 
 
 
@@ -89,6 +89,8 @@ SELECT COUNT(order_number) FROM Station_On_Line, Line WHERE line_name = '';
 ''' EDIT PROFILE: '''
 # display all the user's information
 SELECT * FROM User WHERE User.ID = '';
+# update user information in the database when saved
+UPDATE User SET first_name = '' AND minit = '' AND last_name = '' AND ID = '' AND password = '' AND passenger_email = '' WHERE ID = '';
 # IMPORTANT: REMEMBER TO INCLUDE ON DELETE CASCADE FOR ALL REVIEWS, CARDS, AND TRIPS SO THAT WHEN A USER IS DELETED, THEIR REPSECTIVE CARDS/TRIPS/REVIEWS DELETE TOO
 
 
@@ -101,11 +103,62 @@ INSERT INTO Card VALUES('chall68', 'T-mes', '12/04/2011 12:00:00 AM', NULL, '01/
 
 
 ''' GO ON A TRIP: '''
+*** NEEDS HELP AND WORK - NOT COMPLETE ***
 # display all the stations that have had cards used by them in alphabetical order, along with the datetime the card was used
-SELECT from_station_name
+SELECT from_station_name FROM Trip ORDER BY from_station_name;
 
 
 
 
+''' VIEW TRIPS: '''
+# pull all of the trips made by a certain user
+SELECT * FROM Trip WHERE user_ID = '';
 
 
+
+''' UPDATE TRIP: '''
+# display all of the station names that could be used as the ending station
+SELECT name FROM Station;
+# update the trip to include the ending station as well as the ending datetime
+UPDATE Trip SET to_station_name = '' AND end_date_time = '' WHERE from_station_name = '' AND card_type = '';
+
+
+
+''' ADMIN REVIEW PASSENGER REVIEWS: '''
+# pull all pending reviews from the database
+SELECT * FROM Review WHERE approval_status = 'pending';
+
+
+
+''' EDIT PROFILE: '''
+# update the admin info in the database
+UPDATE User SET first_name = '' AND minit = '' AND last_name = '' AND ID = '' AND password = '' WHERE ID = '';
+
+
+
+''' ADD STATION: '''
+# add a station into the station table
+INSERT INTO Station VALUES ('Arc de Triomf', 'closed', 'Catalonia', '12345 Barcelona', 12345, 'Barcelona');
+*** MAKE ALL LOCATION ATTRIBUTES UNIQUE IN SCHEMA AND MAKE LINE_NAME NOT NULL IN STATION_ON_LINE
+
+
+
+''' ADD LINE: '''
+# add a line into the Admin_Add_Line table, ensuring the line name and station order number is unique
+INSERT INTO Admin_Add_Line VALUES('L1', 'wwhite12', NULL);
+*** MAKE THE ORDER NUMBER UNIQUE FOR SPECIFIC STATIONS ***
+# display all of the stations in alphabetical order
+SELECT name FROM Station ORDER BY Station.name;
+
+
+
+''' LINE SUMMARY: '''
+# display the line name, order number, and stations in descending order
+SELECT * FROM Station_On_Line ORDER BY Station_On_Line.order_number DESC;
+
+
+
+''' STATION INFO: '''
+*** NOT DONE ***
+# pull the name, status, address, lines at the station, avg shopping rating, avg connection speed, and all reviews for a certain station
+SELECT name, CONCAT(address, ',', zipcode, ' ', city), AVG(shopping), AVG(connection_speed), line_name FROM Station JOIN Review REV ON Station.name = REV.station_name JOIN Station_On_Line SOL ON REV.station_name = SOL.station_name WHERE Station.name = 'Catalunya' AND Review.approval_status = 'approved';

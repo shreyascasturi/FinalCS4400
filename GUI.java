@@ -108,8 +108,7 @@ public class GUI {
                                 ResultSet adminSet = adminCheck.executeQuery(adminQuery); //
                                 if (!(adminSet.isBeforeFirst())) {
                                     System.out.println("Congrats, you're now logged in.");
-                                    while(true) {
-                                     
+                                    while(true) {                                     
                                         int passengerGUIresult = MainPassengerGUI(); // check how this works
                                         if (passengerGUIresult == 1) {
                                             int leaveReview = leaveReview(userID, newConnect); // LEAVE REVIEW
@@ -691,6 +690,7 @@ public class GUI {
         while (true) { // this keeps repeating if your username is wrong/doesn't exist in the database.
             System.out.println("----------- TRIP PLAN -------------");
             System.out.print("ENTER STARTING STATION: ");
+            return 0;
 
         }
     }
@@ -824,7 +824,7 @@ public class GUI {
     }
 
 
-    public static int stationDisplay(String stationName, Connection newConnect) {
+    public static int stationDisplay(String stationName, Connection newConnect) throws Exception {
         int approvedReviewsForStation = -1;
         Connection getReviewsAddressEtc = newConnect;
         String nameStation = stationName;
@@ -842,17 +842,18 @@ public class GUI {
             ResultSet StationInfoAddrStat = connectOnStation.executeQuery(queryToGetStationInfo);
             ResultSet StationLines = connectOnStation.executeQuery(getLinesForStation);
             ResultSet ReviewsForStationAppr = connectOnStation.executeQuery(getReviewsForStation);
-            ResultSet 
+            // ResultSet;
             while(StationLines.next()) {
                 LinesList.add(StationLines.getString("line_name")); // add to LinesList;
             }
-            
+
+            System.exit(1);
             
         }
         
     }
     
-    public static int lineDisplay(String line, Connection newConnect) {
+    public static int lineDisplay(String line, Connection newConnect) throws Exception {
         int numOfStops = -1; // set the numOfStops impossible
         String nameLine = "Line NUMBER/NAME: "; // prep string
         Connection lineConn = newConnect; // bring connection in
@@ -862,7 +863,7 @@ public class GUI {
         String countQuery = "SELECT COUNT(station_name) FROM Station_On_Line WHERE line_name='" + line + "'"; // get the count.
         ResultSet getStations = stateLine.executeQuery(queryToExec); // get the damn set.
         ResultSet getCountStations = stateLine.executeQuery(countQuery); // get the count.
-        while(countQuery.next()) {
+        while(getCountStations.next()) {
             numOfStops = Integer.parseInt(getCountStations.getString("COUNT(station_name)"));
         }
         displayArr = new String[numOfStops + 1][2]; // ADD 1 because we start 1 row below.
@@ -889,7 +890,7 @@ public class GUI {
         // be able to choose various things, such as the review and the station. Focus on this now.
         System.out.println();
 
-        System.exit(1);
+        return 0;        
         // SELECT station_name, order_number FROM Station_On_Line WHERE line_name='name';
     }
 }

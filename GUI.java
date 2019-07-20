@@ -764,28 +764,9 @@ public class GUI {
                     expDay = arrExpCardDate[cardInt].substring(8, arrExpCardDate[cardInt].length());
                 }
 
-                System.out.println("yr: " + expYear + " m: " + expMonth + " d: " + expDay);
-
                 if (cardInt < 0 || cardInt >= cardCount) {
                     System.out.println("Pick a number greater than 0 and less than or equal to n-1."); // check invalid INDEX
                 } else if ((!(arrUses[cardInt] == null) && arrUses[cardInt].equals("0")) || ((!(arrExpCardDate[cardInt] == null)) && (expYear.compareTo(String.valueOf(curYear)) < 0 || (expYear.equals(String.valueOf(curYear)) && expMonth.compareTo(curMonth < 10 ? "0" + curMonth : String.valueOf(curMonth)) < 0) || (expYear.equals(String.valueOf(curYear)) && expMonth.equals(curMonth < 10 ? "0" + curMonth : String.valueOf(curMonth)) && expDay.compareTo(curDay < 10 ? "0" + curDay : String.valueOf(curDay)) < 0)))) {
-
-                    System.out.println(arrUses[cardInt] == null);
-                    System.out.println((!(arrUses[cardInt] == null) && arrUses[cardInt].equals("0")));
-                    System.out.println(arrExpCardDate[cardInt] == null);
-                    System.out.println(expYear.compareTo(String.valueOf(curYear)));
-                    System.out.println(expMonth.compareTo(String.valueOf(curMonth)));
-                    System.out.println(expDay.compareTo(String.valueOf(curDay)));
-                    System.out.println((expYear.compareTo(String.valueOf(curYear)) < 0 || (expYear.equals(String.valueOf(curYear)) && expMonth.compareTo(String.valueOf(curMonth)) < 0) || (expYear.equals(String.valueOf(curYear)) && expMonth.equals(String.valueOf(curMonth)) && expDay.compareTo(String.valueOf(curDay)) < 0)));
-                    System.out.println(arrUses[cardInt] == null);
-                    System.out.println(arrUses[cardInt] == null);
-                    System.out.println(arrUses[cardInt] == null);
-                    System.out.println(arrUses[cardInt] == null);
-                    System.out.println(arrUses[cardInt] == null);
-                    System.out.println(arrUses[cardInt] == null);
-                    System.out.println(arrUses[cardInt] == null);
-                    System.out.println(arrUses[cardInt] == null);
-                    System.out.println(arrUses[cardInt] == null);
 
                     System.out.println("Choose a valid card");
                 } else {

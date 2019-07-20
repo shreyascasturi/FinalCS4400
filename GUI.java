@@ -115,6 +115,9 @@ public class GUI {
                                     if (passengerGUIresult == 3) {
                                         int cardSuccess = buyCard(userID);
                                         System.out.println();
+                                    } else if (passengerGUIresult == 4) {
+                                        int tripCreatesuccess = goOnTrip(userID);
+                                        System.out.println();
                                     } else if (passengerGUIresult == 1) {
                                         int leaveReviewSuccess = leaveReview(username, newConnect);
                                         System.out.println();
@@ -167,8 +170,10 @@ public class GUI {
                 System.out.println("------------PURCHASE CARD------------");
                 System.out.println("");
                 return 3; //return 3(Go to card purchase screen);
-            } else if (choosePassengerInt == 4) {
-                break; //return 0;
+            } else if (choosePassengerInt == 4) { // Create Trip
+                System.out.println("------------PLAN TRIP------------");
+                System.out.println("");
+                return 4; //return 4(Go to Go On Trip screen)
             } else if (choosePassengerInt == 5) { // View Trip
                 break; //return 0;
             } else if (choosePassengerInt == 6) { // edit profile
@@ -358,7 +363,7 @@ public class GUI {
              arrStations[fillIndex] = getStations.getString("name"); // get the value out of the column "name"
              fillIndex++;
          }
-         String actualArray = Arrays.toString(arrStations); // turn this into a printable thing. finally, fucking use ARRAYS.
+         //String actualArray = Arrays.toString(arrStations); // turn this into a printable thing. finally, fucking use ARRAYS.
          System.out.println("ARRAY FOR STATIONS: " + Arrays.toString(arrStations)); // print array.
 
          while(true) { // a massive loop because fuck me
@@ -534,7 +539,7 @@ public class GUI {
                     firstName = editor.nextLine();
                     if (firstName.equalsIgnoreCase("exit")) {
                         System.out.println("You exited the editor at FirstName. Good-bye.");
-                        break; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
+                        return 0; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
                     } else {
                         if (firstName.length() == 0) {
                             System.out.println("Type a first name please");
@@ -545,14 +550,14 @@ public class GUI {
                                 mi = middleI.length() == 0 ? "NULL" : middleI;
                                 if (mi.equalsIgnoreCase("exit")) {
                                     System.out.println("You exited the editor at Middle Initial. Good-bye.");
-                                    break; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
+                                    return 0; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
                                 } else {
                                     while (true) {
                                         System.out.println("ENTER LAST NAME: ");
                                         lastName = editor.nextLine();
                                         if (lastName.equalsIgnoreCase("exit")) {
                                             System.out.println("You exited the editor at LastName. Good-bye.");
-                                            break;
+                                            return 0;
                                         } else {
                                             if (lastName.length() == 0) {
                                                 System.out.println("Type a last name please");
@@ -562,7 +567,7 @@ public class GUI {
                                                     email = editor.nextLine();
                                                     if (email.equalsIgnoreCase("exit")) {
                                                         System.out.println("You exited the editor at Email. Good-bye.");
-                                                        break;
+                                                        return 0;
                                                     } else {
                                                         if (email.length() == 0) {
                                                             System.out.println("Type an email please");
@@ -572,7 +577,7 @@ public class GUI {
                                                                 userID = editor.nextLine();
                                                                 if (userID.equalsIgnoreCase("exit")) {
                                                                     System.out.println("You exited the editor at UserID. Good-bye.");
-                                                                    break;
+                                                                    return 0;
                                                                 } else {
                                                                     if (userID.length() == 0) {
                                                                         System.out.println("Type a UserID please");
@@ -582,7 +587,7 @@ public class GUI {
                                                                             pass1 = editor.nextLine();
                                                                             if (pass1.equalsIgnoreCase("exit")) {
                                                                                 System.out.println("You exited the editor at Password. Good-bye.");
-                                                                                break;
+                                                                                return 0;
                                                                             } else {
                                                                                 if (pass1.length() == 0) {
                                                                                     System.out.println("Type a password please");
@@ -592,7 +597,7 @@ public class GUI {
                                                                                         pass2 = editor.nextLine();
                                                                                         if (pass2.equalsIgnoreCase("exit")) {
                                                                                             System.out.println("You exited the editor at Password. Good-bye.");
-                                                                                            break;
+                                                                                            return 0;
                                                                                         } else {
                                                                                             if (pass2.length() == 0) {
                                                                                                 System.out.println("Type a Password please");
@@ -612,7 +617,7 @@ public class GUI {
                                                                                                     System.out.println("-------- RETURNING TO LOGIN SCREEN, EDIT FAILED ---------");
                                                                                                 } else {
                                                                                                     System.out.println("Congrats, your account has been edited.");
-                                                                                                    System.exit(1); // break completely;
+                                                                                                    return 0; // break completely;
                                                                                                 }
                                                                                             }
                                                                                         }
@@ -634,8 +639,8 @@ public class GUI {
                         }
                     }
                 }
-                System.out.println("HITTING LINE OUTSIDE BIG BLOCK, DONE WHEN EXIT TYPED IN USERNAME CHECK");
-                return 0; // this should never hit.
+                // System.out.println("HITTING LINE OUTSIDE BIG BLOCK, DONE WHEN EXIT TYPED IN USERNAME CHECK");
+                // return 0; // this should never hit.
             } else if (choiceEditString == 2) {
                 Statement editcheck = newConnect.createStatement();
                 String passQuery = "DELETE FROM User WHERE ID='" + ID + "'";
@@ -654,7 +659,7 @@ public class GUI {
                 }
             } else if (choiceEditString == 3) {
                 System.out.println("You exited while editing user info. Goodbye");
-                System.exit(1);
+                return 0;
             } else {
                 System.out.println("You entered an incorrect number. Try again. Or quit.");
                 System.out.println("");
@@ -666,10 +671,159 @@ public class GUI {
         Connection newConnect = getConnection();
         Scanner editor = new Scanner(System.in);
 
-        while (true) { // this keeps repeating if your username is wrong/doesn't exist in the database.
-            System.out.println("----------- TRIP PLAN -------------");
-            System.out.print("ENTER STARTING STATION: ");
+        Statement getAllStations = newConnect.createStatement();
 
+        String getStationsQuery = "SELECT name FROM Station ORDER BY name"; // order by name, assume we only have to get from stations.
+        String getStationQueryNum = "SELECT COUNT(name) FROM Station"; // get the count of names.nnn
+        // String getStationsQuery = "SELECT name FROM Station JOIN Station_On_Line WHERE Station_On_Line.station_name = Station.name ORDER BY"; // this gets us the actual table of names.
+        // String getStationQueryNum = "SELECT COUNT(name) FROM Station JOIN Station_On_Line WHERE Station_On_Line.station_name = Station.name"; // this gets us the count.
+        ResultSet getStations = getAllStations.executeQuery(getStationsQuery); // get the stations.
+        ResultSet getNumStations = getAllStations.executeQuery(getStationQueryNum); // get the count of stations.
+        int stationCount = -5; // set random num
+        while(getNumStations.next()) {
+            stationCount = Integer.parseInt(getNumStations.getString("COUNT(name)")); // getNum = count of stations.
+        }
+        String[] arrStations = new String[stationCount]; // create string array to hold the names of the stations
+        int fillIndex = 0; // simple loop to go through ResultSet getStations.
+        while (getStations.next()) {
+            arrStations[fillIndex] = getStations.getString("name"); // get the value out of the column "name"
+            fillIndex++;
+        }
+        //String actualArray = Arrays.toString(arrStations); // turn this into a printable thing. finally, fucking use ARRAYS.
+        System.out.println("ARRAY FOR STATIONS: " + Arrays.toString(arrStations)); // print array.
+
+        while(true) { // classic repeating loop
+            System.out.println("----------- TRIP PLAN -------------");
+            System.out.print("CHOOSE BY INDEX YOUR STARTING STATION; 0 BEING FIRST, N - 1 BEING THE NTH OR -1 TO QUIT: "); // choose by INDEX from the array.
+            int stationInt = editor.nextInt();
+            if (stationInt < -1 || stationInt >= stationCount) {
+                System.out.println("Pick a number greater than 0 and less than or equal to n-1."); // check invalid INDEX
+            } else if (stationInt == -1) {
+                System.out.println("Returning to main menu");
+                return 0;
+            } else {
+
+                Statement getAllCards = newConnect.createStatement();
+
+                String getCardsQuery = "SELECT type_of_card, purchase_date_time, uses_left, expiration_date  FROM Card WHERE user_ID='" + userID + "'"; // order by name, assume we only have to get from Cards.
+                String getCardQueryNum = "SELECT COUNT(purchase_date_time) FROM Card WHERE user_ID='" + userID + "'"; // get the count of names.nnn
+                // String getCardsQuery = "SELECT name FROM Card JOIN Card_On_Line WHERE Card_On_Line.Card_name = Card.name ORDER BY"; // this gets us the actual table of names.
+                // String getCardQueryNum = "SELECT COUNT(name) FROM Card JOIN Card_On_Line WHERE Card_On_Line.Card_name = Card.name"; // this gets us the count.
+                ResultSet getCards = getAllCards.executeQuery(getCardsQuery); // get the Cards.
+                ResultSet getNumCards = getAllCards.executeQuery(getCardQueryNum); // get the count of Cards.
+                int cardCount = -5; // set random num
+                while(getNumCards.next()) {
+                    cardCount = Integer.parseInt(getNumCards.getString("COUNT(purchase_date_time)")); // getNum = count of Cards.
+                }
+                String[] arrCards = new String[cardCount];
+                String[] arrCardTypes = new String[cardCount]; // create string array to hold the types of the Cards
+                String[] arrCardDate = new String[cardCount];
+                String[] arrUses = new String[cardCount];
+                String[] arrExpCardDate = new String[cardCount];
+                fillIndex = 0; // simple loop to go through ResultSet getCards.
+                while (getCards.next()) {
+                    arrCardTypes[fillIndex] = getCards.getString("type_of_card");
+                    arrCardDate[fillIndex] = getCards.getString("purchase_date_time"); // get the value out of the column "purchase_date_time"
+                    arrExpCardDate[fillIndex] = getCards.getString("expiration_date");
+                    arrUses[fillIndex] = getCards.getString("uses_left");
+                    String usesLeft = arrUses[fillIndex] == null ? "UNLIMITED" : arrUses[fillIndex];
+                    arrCards[fillIndex] = arrCardTypes[fillIndex] + " USES LEFT: " + usesLeft;
+                    fillIndex++;
+                }
+
+                if (arrCards.length == 0) {
+                    System.out.println("You must purchase a card to go on a trip, returning to main menu");
+                    return 0;
+                }
+
+                String actualCardArray = Arrays.toString(arrCards); // turn this into a printable thing. finally, fucking use ARRAYS.
+                System.out.println("ARRAY FOR CARDS: " + Arrays.toString(arrCards)); // print array.
+
+                System.out.print("CHOOSE BY INDEX THE CARD YOU WISH TO USE; 0 BEING FIRST, N - 1 BEING THE NTH OR -1 TO QUIT: ");
+
+
+
+                LocalDate localDate = LocalDate.now();
+                int curYear = localDate.getYear();
+                int curMonth = localDate.getMonthValue();
+                int curDay = localDate.getDayOfMonth();
+
+                int cardInt = editor.nextInt();
+
+                if (cardInt == -1) {
+                    System.out.println("Returning to main menu");
+                    return 0;
+                }
+
+                String expYear = "9999";
+                String expMonth = "99";
+                String expDay = "99";
+                if (!(arrExpCardDate[cardInt] == null)) {
+                    expYear = arrExpCardDate[cardInt].substring(0, 4);
+                    expMonth = arrExpCardDate[cardInt].substring(5, 7);
+                    expDay = arrExpCardDate[cardInt].substring(8, arrExpCardDate[cardInt].length());
+                }
+
+                System.out.println("yr: " + expYear + " m: " + expMonth + " d: " + expDay);
+
+                if (cardInt < 0 || cardInt >= cardCount) {
+                    System.out.println("Pick a number greater than 0 and less than or equal to n-1."); // check invalid INDEX
+                } else if ((!(arrUses[cardInt] == null) && arrUses[cardInt].equals("0")) || ((!(arrExpCardDate[cardInt] == null)) && (expYear.compareTo(String.valueOf(curYear)) < 0 || (expYear.equals(String.valueOf(curYear)) && expMonth.compareTo(curMonth < 10 ? "0" + curMonth : String.valueOf(curMonth)) < 0) || (expYear.equals(String.valueOf(curYear)) && expMonth.equals(curMonth < 10 ? "0" + curMonth : String.valueOf(curMonth)) && expDay.compareTo(curDay < 10 ? "0" + curDay : String.valueOf(curDay)) < 0)))) {
+
+                    System.out.println(arrUses[cardInt] == null);
+                    System.out.println((!(arrUses[cardInt] == null) && arrUses[cardInt].equals("0")));
+                    System.out.println(arrExpCardDate[cardInt] == null);
+                    System.out.println(expYear.compareTo(String.valueOf(curYear)));
+                    System.out.println(expMonth.compareTo(String.valueOf(curMonth)));
+                    System.out.println(expDay.compareTo(String.valueOf(curDay)));
+                    System.out.println((expYear.compareTo(String.valueOf(curYear)) < 0 || (expYear.equals(String.valueOf(curYear)) && expMonth.compareTo(String.valueOf(curMonth)) < 0) || (expYear.equals(String.valueOf(curYear)) && expMonth.equals(String.valueOf(curMonth)) && expDay.compareTo(String.valueOf(curDay)) < 0)));
+                    System.out.println(arrUses[cardInt] == null);
+                    System.out.println(arrUses[cardInt] == null);
+                    System.out.println(arrUses[cardInt] == null);
+                    System.out.println(arrUses[cardInt] == null);
+                    System.out.println(arrUses[cardInt] == null);
+                    System.out.println(arrUses[cardInt] == null);
+                    System.out.println(arrUses[cardInt] == null);
+                    System.out.println(arrUses[cardInt] == null);
+                    System.out.println(arrUses[cardInt] == null);
+
+                    System.out.println("Choose a valid card");
+                } else {
+                    System.out.println("YOU HAVE CHOSEN A TRIP STARTING FROM: " + arrStations[stationInt] + " AND USING CARD: " + arrCards[cardInt]);
+
+                    System.out.println("CHOOSE 1 CONFIRM");
+                    System.out.println("CHOOSE 2 CANCEL AND QUIT");
+                    System.out.print("ENTER CHOICE: ");
+
+                    Scanner ChoiceEditType = new Scanner(System.in);
+                    int choiceEditString = ChoiceEditType.nextInt();
+
+                    if (choiceEditString == 1) {
+
+
+
+                        System.out.println("");
+                        Statement tripcheck = newConnect.createStatement();
+                        String passQuery = "INSERT INTO Trip VALUES ('" + userID + "', '" + arrCardTypes[cardInt] + "', '" + arrCardDate[cardInt] + "', sysdate(), NULL, '" + arrStations[stationInt] + "', NULL)";
+
+                        //String passQuery = "UPDATE User SET ID = '" + userID + "', first_name = '" + firstName + "', minit = '" + mi + "', last_name = '" + lastName + "', password = '" + pass1 + "', passenger_email = '" + email + "' WHERE ID='" + userID + "'";
+                        //String passQuery = "INSERT INTO User VALUES ('" + userID + "', '" + firstName + "', '" + mi + "', '" + lastName + "', '" + pass1 + "', '" + email + "')";
+                        ResultSet tripSet = tripcheck.executeQuery(passQuery);
+                        if (!arrCardTypes[cardInt].equals("T-mes") || !arrCardTypes[cardInt].equals("T-jove")) {
+                            String updateQuery = "UPDATE Card SET uses_left=uses_left - 1 WHERE user_ID='" + userID + "' AND type_of_card='" + arrCardTypes[cardInt] + "' AND purchase_date_time='" + arrCardDate[cardInt] + "'";
+                            tripcheck.executeQuery(updateQuery);
+                        }
+                        // String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
+                        // ResultSet testSet = rgstrcheck.executeQuery(testQuery);
+                        System.out.println("You have embarked on a trip");
+                        return 0;
+
+                    } else {
+                        System.out.println("You have cancelled your trip and are returning to main menu");
+                        return 0;
+                    }
+                }
+            }
         }
     }
 }

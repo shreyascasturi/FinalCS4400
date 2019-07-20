@@ -163,9 +163,12 @@ public class GUI {
                               + " 6. Edit Profile %n 7. Goto Login %n 8. Goto Welcome Screen %n 9. Quit Fully %n");
             System.out.print("CHOOSE AN OPTION: ");
             int choosePassengerInt = choosePassengerGUI.nextInt(); // same old, basically.
-            if (choosePassengerInt == 1) { // LEAVE REVIEW
-                System.out.println("----------LEAVE REVIEW ----------");
-                return 1;                 
+            if (choosePassengerInt == 1) {
+                // leaveReview(newConnect);
+                // break; //return 0; // leave review
+                System.out.println("------------LEAVE REVIEW------------");
+                System.out.println("");
+                return 1;
             } else if (choosePassengerInt == 2) {
                 System.out.println("----------VIEW REVIEWS ----------");
                 return 2;               
@@ -338,7 +341,7 @@ public class GUI {
         }
     }
 
-    public static void leaveReview(Connection connection) throws Exception { // leave reviews, USER/ADMIN
+    public static int leaveReview(String userID, Connection connection) throws Exception { // leave reviews, USER/ADMIN
          Connection newConnection = connection; // pass the connection in.
          // be able to list all the stations
          Statement getAllStations = newConnection.createStatement();
@@ -347,13 +350,7 @@ public class GUI {
          int shoppingRating = -1; // initialization of ratings stuff.
          int connectionRating = -1;
          String nameOfStation = null;
-         String commentLeft = null;
-         int RID = -1; // rid stuff.
-
-         // approverID = NULL
-         // approval_status = PENDING
-         // edit_timestamp = NULL;         
-         
+         String commentLeft = null;               
          // We want the stations that are admin-approved AND are on admin-approved lines.
          String getStationsQuery = "SELECT name FROM Station ORDER BY name"; // order by name, assume we only have to get from stations.
          String getStationQueryNum = "SELECT COUNT(name) FROM Station"; // get the count of names.nnn
@@ -390,7 +387,7 @@ public class GUI {
                          System.out.println("Choose a valid rating."); // valid check on shopping rating.
                      } else {
                          while(true) {
-                             System.out.print("CHOOSE A CONNECTION RATING FROM 0 TO 5: "); // valid check on 
+                             System.out.print("CHOOSE A CONNECTION RATING FROM 0 TO 5: "); // valid check on
                              connectionRating = chooseStation.nextInt();
                              if (connectionRating < 0 || connectionRating > 5) {
                                  System.out.println("Choose a valid number");
@@ -403,19 +400,30 @@ public class GUI {
                                  } else {
                                      
                                  }
+
+                                 ResultSet r = getAllStations.executeQuery("SELECT COUNT(rid) AS rowcount FROM Review WHERE passenger_ID='" + userID + "'");
+                                 r.next();
+                                 int count = r.getInt("rowcount") + 1 ;
+                                 r.close() ;
+
+                                 String passQuery = "INSERT INTO Review VALUES ('" + userID + "', " + count + ", " + shoppingRating + ", " + connectionRating +", '" + commentLeft +  "', NULL, 'pending', NULL, '" + arrStations[getInt] + "')";
+                                 ResultSet rgstrSet = getAllStations.executeQuery(passQuery);
+                                 System.out.println("You left a review.");
+                                 return 0;
                                  // TODO: OBTAIN THE NEW RID BY GETTING ALL REVIEWS BY A PARTICULAR USER AND GETTING THE MAX
                                  // NUMBER OF THOSE RIDS, ADD 1 TO GET THE NEW RID - IT'S A NEW REVIEW.
                                  // TODO: WRITE THE QUERY TO ADD EVERYTHING AS A REVIEW TUPLE.
                                  // TODO: TEST AND SEE IF THIS WORKS
+                                 // edit timestamp should be null
                              }
                          }
                      }
                  }
-                             
+
              }
 
          }
-         
+
          //System.exit(1); // exit for now.
      }
 

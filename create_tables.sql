@@ -8,7 +8,7 @@ CREATE TABLE User
     first_name varchar(255),
     minit char(1),
     last_name varchar(255),
-    password varchar(255) NOT NULL,
+    password varccardusertriphar(255) NOT NULL,
     CONSTRAINT PASSWORDLENCHECK
               CHECK (char_length(password) >= 8), /* a constraint on password length.
               We check if the password length is actually at least 8 chars. */

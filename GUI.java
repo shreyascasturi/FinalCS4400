@@ -6,6 +6,7 @@ import java.time.LocalDate;
 public class GUI {
     public static String userID = ""; // set the basic String.
     public static boolean isAdmin  = false; // set the boolean as false.
+    public static String identifier = "userID: " + userID + " ROLE: " + isAdmin ? "ADMIN" : "PASSENGER"
     public static void main(String[] args) throws Exception {
         while (true) {
             //Scanner ChoiceIntroPage = new Scanner(System.in);
@@ -103,7 +104,6 @@ public class GUI {
                                 System.out.println("you entered password wrong. try again.");
                                 System.out.println("-------- RETURNING TO LOGIN SCREEN, PASSWORD DOESN'T MATCH WITH GIVEN USERNAME ---------");
                             } else {
-                                System.out.println("Congrats, you're now logged in.");
                                 System.out.println("Checking admin now...");
                                 userID = username; // set the static variable as username.
                                 Statement adminCheck = newConnect.createStatement(); // create new statement for admin check.
@@ -111,27 +111,33 @@ public class GUI {
                                 ResultSet adminSet = adminCheck.executeQuery(adminQuery); //
                                 if (!(adminSet.isBeforeFirst())) {
                                   while(true) {
-                                    int passengerGUIresult = MainPassengerGUI(); // check how this works
-                                    if (passengerGUIresult == 3) {
-                                        int cardSuccess = buyCard(userID);
-                                        System.out.println();
-                                    } else if (passengerGUIresult == 1) {
-                                        int leaveReviewSuccess = leaveReview(username, newConnect);
-                                        System.out.println();
-                                    } else if (passengerGUIresult == 6) {
-                                        int editSuccess = editUser(userID);
-                                        System.out.println();
-                                    } else if (passengerGUIresult == 7) { // goto the login screen.
-                                        break; // this should break out of the inner loop about the password filling in and go straight to the login screen.
-                                    } else if (passengerGUIresult == 8) {
-                                        return 0; // this takes us to the welcome screen.
-                                    } else if (passengerGUIresult == 9) {
-                                        return -1; // this quits the app and gives us the quit screen.
-                                    } else {
-                                        System.out.println("This should never be reached at all. This is in the passengerGui check in checkLogin.");
-                                        System.out.println("Crash app completely.");
-                                        System.exit(1); // this breaks the app with no quit screen other than "crash app completely."
-                                    }
+                                      System.out.println("Congrats, you're now logged in.");
+                                      int passengerGUIresult = MainPassengerGUI(); // check how this works
+                                      if (passengerGUIresult == 1) {
+                                          
+                                      } else if (passengerGUIresult == 2) {
+                                          System.exit(1);
+                                      } else if (passengerGUIresult == 3) {
+                                          int cardSuccess = buyCard(userID); // BUYING CARD
+                                          System.out.println();
+                                      } else if (passengerGUIresult == 4) { // GO ON TRIP
+                                          System.exit(1);  
+                                      } else if (passengerGUIresult == 5) { // VIEW TRIP
+                                          System.exit(1);
+                                      } else if (passengerGUIresult == 6) { // EDITING USER PROFILE
+                                          int editSuccess = editUser(userID);
+                                          System.out.println();
+                                      } else if (passengerGUIresult == 7) { // GOTO LOGIN SCREEN
+                                          break; // this should break out of the inner loop about the password filling in and go straight to the login screen.
+                                      } else if (passengerGUIresult == 8) { // GOTO WELCOME SCREEN
+                                          return 0; // this takes us to the welcome screen.
+                                      } else if (passengerGUIresult == 9) { // QUIT FULLY
+                                          return -1; // this quits the app and gives us the quit screen.
+                                      } else {
+                                          System.out.println("This should never be reached at all. This is in the passengerGui check in checkLogin.");
+                                          System.out.println("Crash app completely.");
+                                          System.exit(1); // this breaks the app with no quit screen other than "crash app completely."
+                                      }
                                   }
                                 } else {
                                     System.out.println("admin motherfucker");
@@ -150,7 +156,9 @@ public class GUI {
         Connection newConnect = getConnection();
         Scanner choosePassengerGUI = new Scanner(System.in);
         while(true) {
-            System.out.println("------------ MAIN PASSENGER 'GUI' ---------------------");
+            System.out.println("------------ MAIN PAGE ---------------------");
+            System.out.println();
+            System.out.println(identifier); // this is a string that tells us the userID and passenger/admin role for a given user.
             System.out.printf("CHOOSE A NUMBER TO EXPLORE DIFFERENT OPTIONS. %n 1. Leave Review %n 2. View Reviews %n 3. Buy Card %n 4. Go On Trip %n 5. View Trips %n"
                               + " 6. Edit Profile %n 7. Goto Login %n 8. Goto Welcome Screen %n 9. Quit Fully %n");
             System.out.print("CHOOSE AN OPTION: ");
@@ -162,15 +170,18 @@ public class GUI {
                 System.out.println("");
                 return 1;
             } else if (choosePassengerInt == 2) {
-                break; //return 0; // view review
+                System.out.println("----------VIEW REVIEWS ----------");
+                return 2;               
             } else if (choosePassengerInt == 3) {
                 System.out.println("------------PURCHASE CARD------------");
                 System.out.println("");
                 return 3; //return 3(Go to card purchase screen);
-            } else if (choosePassengerInt == 4) {
-                break; //return 0;
+            } else if (choosePassengerInt == 4) { // GO ON TRIP
+                System.out.println("--------------GOING ON TRIP-----------");
+                return 4;
             } else if (choosePassengerInt == 5) { // View Trip
-                break; //return 0;
+                System.out.println("--------------VIEWING TRIPS----------");
+                return 5;                
             } else if (choosePassengerInt == 6) { // edit profile
                 System.out.println("------------EDIT USER INFORMATION------------");
                 System.out.println("");
@@ -339,8 +350,7 @@ public class GUI {
          int shoppingRating = -1; // initialization of ratings stuff.
          int connectionRating = -1;
          String nameOfStation = null;
-         String commentLeft = null;
-
+         String commentLeft = null;               
          // We want the stations that are admin-approved AND are on admin-approved lines.
          String getStationsQuery = "SELECT name FROM Station ORDER BY name"; // order by name, assume we only have to get from stations.
          String getStationQueryNum = "SELECT COUNT(name) FROM Station"; // get the count of names.nnn
@@ -387,6 +397,8 @@ public class GUI {
                                  commentLeft = captureReview.nextLine();
                                  if (commentLeft.length() == 0 || commentLeft.equals("NULL")) {
                                      commentLeft = "NULL";
+                                 } else {
+                                     
                                  }
 
                                  ResultSet r = getAllStations.executeQuery("SELECT COUNT(rid) AS rowcount FROM Review WHERE passenger_ID='" + userID + "'");

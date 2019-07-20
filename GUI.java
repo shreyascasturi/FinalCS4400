@@ -5,8 +5,7 @@ import java.sql.*; // import the big package.
 import java.time.LocalDate;
 public class GUI {
     public static String userID = ""; // set the basic String.
-    public static boolean isAdmin  = false; // set the boolean as false.
-    public static String identifier = "userID: " + userID + " ROLE: " + isAdmin ? "ADMIN" : "PASSENGER"
+    public static boolean isAdmin  = false; // set the boolean as false.    
     public static void main(String[] args) throws Exception {
         while (true) {
             //Scanner ChoiceIntroPage = new Scanner(System.in);
@@ -114,9 +113,11 @@ public class GUI {
                                       System.out.println("Congrats, you're now logged in.");
                                       int passengerGUIresult = MainPassengerGUI(); // check how this works
                                       if (passengerGUIresult == 1) {
-                                          
-                                      } else if (passengerGUIresult == 2) {
-                                          System.exit(1);
+                                          int leaveReview = leaveReview(userID, newConnect); // LEAVE REVIEW
+                                          System.out.println(); // shouldn't do anything really.
+                                      } else if (passengerGUIresult == 2) { // VIEW REVIEWS
+                                          int viewResults = viewReviews(userID, newConnect);
+                                          System.out.println();
                                       } else if (passengerGUIresult == 3) {
                                           int cardSuccess = buyCard(userID); // BUYING CARD
                                           System.out.println();
@@ -158,7 +159,7 @@ public class GUI {
         while(true) {
             System.out.println("------------ MAIN PAGE ---------------------");
             System.out.println();
-            System.out.println(identifier); // this is a string that tells us the userID and passenger/admin role for a given user.
+            System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.           
             System.out.printf("CHOOSE A NUMBER TO EXPLORE DIFFERENT OPTIONS. %n 1. Leave Review %n 2. View Reviews %n 3. Buy Card %n 4. Go On Trip %n 5. View Trips %n"
                               + " 6. Edit Profile %n 7. Goto Login %n 8. Goto Welcome Screen %n 9. Quit Fully %n");
             System.out.print("CHOOSE AN OPTION: ");
@@ -207,8 +208,7 @@ public class GUI {
             } else {
                 System.out.println("You chose an incorrect number. Try again.");
             }
-        }
-        return 0;
+        }        
          // breaks out of the big while-loop, will hit if exit at password.
     }
 
@@ -368,14 +368,19 @@ public class GUI {
              arrStations[fillIndex] = getStations.getString("name"); // get the value out of the column "name"
              fillIndex++;
          }
-         String actualArray = Arrays.toString(arrStations); // turn this into a printable thing. finally, fucking use ARRAYS.
-         System.out.println("ARRAY FOR STATIONS: " + Arrays.toString(arrStations)); // print array.
 
-         while(true) { // a massive loop because fuck me
+         System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.
+         
+         String actualArray = Arrays.toString(arrStations); // turn this into a printable thing. finally, fucking use ARRAYS.
+
+
+         while(true) { // a massive loop because fuck
+             System.out.println("ARRAY FOR STATIONS: " + Arrays.toString(arrStations)); // print array.
              System.out.print("CHOOSE BY INDEX YOUR STATION; 0 BEING FIRST, N - 1 BEING THE NTH: "); // choose by INDEX from the array.
              int getInt = chooseStation.nextInt();
              if (getInt < 0 || getInt >= getNum) {
                  System.out.println("Pick a number greater than 0 and less than or equal to n-1."); // check invalid INDEX
+                 System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.
              } else {
                  shoppingRating = -1; // assume we did get valid index, set shopping and connection ratings.
                  connectionRating = -1;
@@ -385,26 +390,26 @@ public class GUI {
                      shoppingRating = chooseStation.nextInt();
                      if (shoppingRating < 0 || shoppingRating > 5) {
                          System.out.println("Choose a valid rating."); // valid check on shopping rating.
+                         System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.
                      } else {
                          while(true) {
                              System.out.print("CHOOSE A CONNECTION RATING FROM 0 TO 5: "); // valid check on
                              connectionRating = chooseStation.nextInt();
                              if (connectionRating < 0 || connectionRating > 5) {
                                  System.out.println("Choose a valid number");
+                                 System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.
                              } else {
+                                 System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user. // throwing identification everywhere so jackson doesn't get mad.
                                  Scanner captureReview = new Scanner(System.in);
                                  System.out.print("LEAVE A COMMENT ABOUT THE STATION (OPTIONAL): ");
                                  commentLeft = captureReview.nextLine();
                                  if (commentLeft.length() == 0 || commentLeft.equals("NULL")) {
                                      commentLeft = "NULL";
-                                 } else {
-                                     
-                                 }
-
+                                 } 
                                  ResultSet r = getAllStations.executeQuery("SELECT COUNT(rid) AS rowcount FROM Review WHERE passenger_ID='" + userID + "'");
                                  r.next();
-                                 int count = r.getInt("rowcount") + 1 ;
-                                 r.close() ;
+                                 int count = r.getInt("rowcount") + 1;
+                                 r.close();
 
                                  String passQuery = "INSERT INTO Review VALUES ('" + userID + "', " + count + ", " + shoppingRating + ", " + connectionRating +", '" + commentLeft +  "', NULL, 'pending', NULL, '" + arrStations[getInt] + "')";
                                  ResultSet rgstrSet = getAllStations.executeQuery(passQuery);
@@ -428,8 +433,9 @@ public class GUI {
      }
 
     public static int buyCard(String userID) throws Exception {
-        while(true) {
+        while(true) {                   
             System.out.println();
+            System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user. // random identifying nonsense
             System.out.println("CHOOSE 1 FOR T-mes");
             System.out.println("CHOOSE 2 FOR T-10");
             System.out.println("CHOOSE 3 FOR T-50/30");
@@ -473,7 +479,7 @@ public class GUI {
 
             }  else if (ChoiceCardString == 5) { //assume exit
                 System.out.println("You exited during card purchase. Goodbye");
-                System.exit(1);
+                return 0;
             } else { // assume incorrect input.
                 System.out.println("You entered an incorrect number. Try again. Or quit.");
                 System.out.println("");
@@ -481,6 +487,7 @@ public class GUI {
         }
 
     }
+    
 
     public static int insertCard(String userID, String type, String uses) throws Exception{
         Connection newConnect = getConnection();
@@ -497,7 +504,7 @@ public class GUI {
         if (curDay < 10) { //checks if day is single digit so sql will accept it
             realDay = "0" + realDay;
         }
-
+        
         String expDate = type.equals("T-10") ? "NULL" : type.equals("T-jove") ? "'" + realYear + "-" + ((curMonth + 3) % 12) + "-" + realDay + "'" : "'" + realYear + "-" + ((curMonth + 1) % 12) + "-" + realDay + "'";//sets expiration date accomodating for edge cases
         //String expDate = type.equals("T-10") ? "NULL" : type.equals("T-jove") ? "DATEADD(CAST (sysdate() AS date), INTERVAL 3 month)" : "DATEADD(month, 1, CAST (sysdate() AS date) )";
         //String expDate = "2020-10-03";
@@ -683,5 +690,57 @@ public class GUI {
             System.out.print("ENTER STARTING STATION: ");
 
         }
+    }
+
+    public static int viewReviews(String userID, Connection newConnect) throws Exception {
+        Connection gatherData = newConnect; // get the connection;
+        String idToUse = userID; // get the id, even though it's static you shouldn't need it.
+        int numOfQueries = -1;
+        String[][] displayArr;
+
+        while(true) {
+            System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.
+            System.out.println();
+            System.out.println("-----------------REVIEWS TO VIEW-----------------");
+            Statement gatherAllReviews = newConnect.createStatement();
+            String gatherQuery = "SELECT rid, station_name, shopping, connection_speed, comment, approval_status FROM Review WHERE passenger_ID='" + idToUse + "'";
+            String gatherNumQuery = "SELECT COUNT(rid) FROM Review WHERE passenger_id='" + idToUse + "'";
+            ResultSet reviewInfo = gatherAllReviews.executeQuery(gatherQuery); // this gets us all the info of the reviews.
+            ResultSet reviewNum = gatherAllReviews.executeQuery(gatherNumQuery); // this gets us the numerical stuff.
+            // SELECT rid, station_name, shopping, connection_speed, comment, approval_status FROM Station WHERE userID = passenger_ID;
+            if (!(reviewNum.isBeforeFirst())) {
+                System.out.println("THERE ARE NO REVIEWS PUBLISHED. RETURN TO THE MAIN GUI.");
+                return 0;
+            } else {
+                System.out.println("THE ARRAY OF REVIEWS: ");
+                System.out.println();
+                while (reviewNum.next()) {
+                    numOfQueries = Integer.parseInt(reviewNum.getString("COUNT(rid)"));
+                }
+                displayArr = new String[numOfQueries][6];
+                displayArr[0][0] = "RID"; // fill in the top part of the multi dim array with the categories.
+                displayArr[0][1] = "          STATION";
+                displayArr[0][2] = "          SHOPPING_NUM";
+                displayArr[0][3] = "          CONN_SPEED";
+                displayArr[0][4] = "          COMMENT_TEXT";
+                displayArr[0][5] = "          APPROVAL_STATUS";
+                int rowInt = 1;
+                int colInt = 1;
+                while (reviewInfo.next()) {
+                    if (rowInt == numOfQueries) {break;}
+                    while(colInt <= 6) {
+                        displayArr[rowInt][colInt - 1] = colInt == 1 ? reviewInfo.getString(colInt) : "                   " + reviewInfo.getString(colInt);                    
+                        colInt++;   
+                    }
+                    rowInt++;
+                    colInt = 1;                    
+                }
+
+                System.out.println(Arrays.deepToString(displayArr).replace("], ", "]\n\n"));
+                // TODO: BE ABLE TO SORT VARIOUS COLUMNS
+                // TODO DO EDIT REVIEW AND STATION DISPLAY PAGES
+
+            }
+        }        
     }
 }

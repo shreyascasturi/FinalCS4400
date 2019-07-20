@@ -19,15 +19,13 @@ public class GUI {
             System.out.print("ENTER CHOICE: ");
             Scanner ChoiceIntroPage = new Scanner(System.in); // read in the input; either 1, 2, or 3.
             int ChoiceIntroString = ChoiceIntroPage.nextInt(); // we assume that it is an int.
-            if (ChoiceIntroString == 1) {
-                System.out.println("GO BACK INTO IT, LOGIN"); // assume login.
+            if (ChoiceIntroString == 1) { // assume login.
                 int resultofLogin = checkLogin(); // do login, and eventually go from there. This int is unnecessary unless
                 // you decide to exit out of the login screen.
                 if (resultofLogin == -1) { // if -1, we'll choose to break. Zeroes and other things continue the outer loop.
                     break; // this ends the app.
                 }
             } else if (ChoiceIntroString == 2) { // assume register.
-                System.out.println("GO BACK INTO IT, REGISTER");
                 int resultofRegister = register(); // do login, and eventually go from there. This int is unnecessary unless
                 // you decide to exit out of the login screen.
                 if (resultofRegister == -1) { // if -1, we'll choose to break.
@@ -109,37 +107,41 @@ public class GUI {
                                 String adminQuery = "SELECT ID From Admin WHERE ID = '" + userID + "'"; // admin query creation
                                 ResultSet adminSet = adminCheck.executeQuery(adminQuery); //
                                 if (!(adminSet.isBeforeFirst())) {
-                                  while(true) {
-                                      System.out.println("Congrats, you're now logged in.");
-                                      int passengerGUIresult = MainPassengerGUI(); // check how this works
-                                      if (passengerGUIresult == 1) {
-                                          int leaveReview = leaveReview(userID, newConnect); // LEAVE REVIEW
-                                          System.out.println(); // shouldn't do anything really.
-                                      } else if (passengerGUIresult == 2) { // VIEW REVIEWS
-                                          int viewResults = viewReviews(userID, newConnect);
-                                          System.out.println();
-                                      } else if (passengerGUIresult == 3) {
-                                          int cardSuccess = buyCard(userID); // BUYING CARD
-                                          System.out.println();
-                                      } else if (passengerGUIresult == 4) { // GO ON TRIP
-                                          System.exit(1);  
-                                      } else if (passengerGUIresult == 5) { // VIEW TRIP
-                                          System.exit(1);
-                                      } else if (passengerGUIresult == 6) { // EDITING USER PROFILE
-                                          int editSuccess = editUser(userID);
-                                          System.out.println();
-                                      } else if (passengerGUIresult == 7) { // GOTO LOGIN SCREEN
-                                          break; // this should break out of the inner loop about the password filling in and go straight to the login screen.
-                                      } else if (passengerGUIresult == 8) { // GOTO WELCOME SCREEN
-                                          return 0; // this takes us to the welcome screen.
-                                      } else if (passengerGUIresult == 9) { // QUIT FULLY
-                                          return -1; // this quits the app and gives us the quit screen.
-                                      } else {
-                                          System.out.println("This should never be reached at all. This is in the passengerGui check in checkLogin.");
-                                          System.out.println("Crash app completely.");
-                                          System.exit(1); // this breaks the app with no quit screen other than "crash app completely."
-                                      }
-                                  }
+                                    System.out.println("Congrats, you're now logged in.");
+                                    while(true) {
+                                     
+                                        int passengerGUIresult = MainPassengerGUI(); // check how this works
+                                        if (passengerGUIresult == 1) {
+                                            int leaveReview = leaveReview(userID, newConnect); // LEAVE REVIEW
+                                            System.out.println(); // shouldn't do anything really.
+                                        } else if (passengerGUIresult == 2) { // VIEW REVIEWS
+                                            int viewResults = viewReviews(userID, newConnect, "REGULAR");
+                                            System.out.println();
+                                        } else if (passengerGUIresult == 3) {
+                                            int cardSuccess = buyCard(userID); // BUYING CARD
+                                            System.out.println();
+                                        } else if (passengerGUIresult == 4) { // GO ON TRIP
+                                            System.exit(1);  
+                                        } else if (passengerGUIresult == 5) { // VIEW TRIP
+                                            System.exit(1);
+                                        } else if (passengerGUIresult == 6) { // EDITING USER PROFILE
+                                            int editSuccess = editUser(userID);
+                                            if (editSuccess == -1) {
+                                                return 0; // get back to the welcoming screen.
+                                            }
+                                            System.out.println();
+                                        } else if (passengerGUIresult == 7) { // GOTO LOGIN SCREEN
+                                            break; // this should break out of the inner loop about the password filling in and go straight to the login screen.
+                                        } else if (passengerGUIresult == 8) { // GOTO WELCOME SCREEN
+                                            return 0; // this takes us to the welcome screen.
+                                        } else if (passengerGUIresult == 9) { // QUIT FULLY
+                                            return -1; // this quits the app and gives us the quit screen.
+                                        } else {
+                                            System.out.println("This should never be reached at all. This is in the passengerGui check in checkLogin.");
+                                            System.out.println("Crash app completely.");
+                                            System.exit(1); // this breaks the app with no quit screen other than "crash app completely."
+                                        }
+                                    }
                                 } else {
                                     System.out.println("admin motherfucker");
                                     isAdmin = true; // set the admin.
@@ -167,13 +169,13 @@ public class GUI {
             if (choosePassengerInt == 1) {
                 // leaveReview(newConnect);
                 // break; //return 0; // leave review
-                System.out.println("------------LEAVE REVIEW------------");
+                System.out.println("------------LEAVE REVIEW------------"); // LEAVE REVIEW
                 System.out.println("");
                 return 1;
-            } else if (choosePassengerInt == 2) {
+            } else if (choosePassengerInt == 2) { // VIEW REVIEWS
                 System.out.println("----------VIEW REVIEWS ----------");
                 return 2;               
-            } else if (choosePassengerInt == 3) {
+            } else if (choosePassengerInt == 3) { // PURCHASE CARD
                 System.out.println("------------PURCHASE CARD------------");
                 System.out.println("");
                 return 3; //return 3(Go to card purchase screen);
@@ -533,7 +535,7 @@ public class GUI {
         while (true) {
             System.out.println("CHOOSE 1 TO UPDATE ACCOUNT");
             System.out.println("CHOOSE 2 TO DELETE ACCOUNT");
-            System.out.println("CHOOSE 3 TO QUIT");
+            System.out.println("CHOOSE 3 TO QUIT TO MAIN GUI"); 
             System.out.print("ENTER CHOICE: ");
 
             Scanner ChoiceEditType = new Scanner(System.in);
@@ -620,18 +622,18 @@ public class GUI {
                                                                                             } else {
                                                                                                 System.out.println("");
                                                                                                 Statement rgstrcheck = newConnect.createStatement();
-                                                                                                String passQuery = "UPDATE User SET ID = '" + userID + "', first_name = '" + firstName + "', minit = '" + mi + "', last_name = '" + lastName + "', password = '" + pass1 + "', passenger_email = '" + email + "' WHERE ID='" + userID + "'";
+                                                                                                String passQuery = "UPDATE User SET ID = '" + userID + "', first_name = '" + firstName + "', minit = '" + mi + "', last_name = '" + lastName + "', password = '" + pass1 + "', passenger_email = '" + email + "' WHERE ID='" + ID + "'"; // YOU HAVE TO CHANGE WHERE IT'S ID.
                                                                                                 //String passQuery = "INSERT INTO User VALUES ('" + userID + "', '" + firstName + "', '" + mi + "', '" + lastName + "', '" + pass1 + "', '" + email + "')";
                                                                                                 ResultSet rgstrSet = rgstrcheck.executeQuery(passQuery);
                                                                                                 String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
                                                                                                 ResultSet testSet = rgstrcheck.executeQuery(testQuery);
-
-                                                                                                if (testSet.isBeforeFirst()) {
+                                                                                                if (!testSet.isBeforeFirst()) { // if the set is empty, then it means
                                                                                                     System.out.println("information edit failed.");
                                                                                                     System.out.println("-------- RETURNING TO LOGIN SCREEN, EDIT FAILED ---------");
+                                                                                                    return -1;
                                                                                                 } else {
-                                                                                                    System.out.println("Congrats, your account has been edited.");
-                                                                                                    System.exit(1); // break completely;
+                                                                                                    System.out.println("Congrats, your account has been edited. We'll need to return you to the login screen.");
+                                                                                                    return -1;                                                                                                    
                                                                                                 }
                                                                                             }
                                                                                         }
@@ -664,11 +666,12 @@ public class GUI {
                 ResultSet testSet = editcheck.executeQuery(testQuery);
 
                 if (!(testSet.isBeforeFirst())) {
-                    System.out.println("Delete failed");
-                    System.out.println("-------- RETURNING TO LOGIN SCREEN, DELETE DIDN'T WORK ---------");
-                    System.exit(1);
+                    System.out.println("Congrats you deleted your account!");
+                    System.out.println("------- RETURNING TO WELCOME SCREEN ------- ");
+                    return -1;
                 } else {
-                    System.out.println("Congrats, you deleted your account.");
+                    System.out.println("Delete failed");
+                    System.out.println("-------- RETURNING TO MAIN GUI, DELETE DIDN'T WORK ---------");                                        
                     return 1;
                 }
             } else if (choiceEditString == 3) {
@@ -692,22 +695,35 @@ public class GUI {
         }
     }
 
-    public static int viewReviews(String userID, Connection newConnect) throws Exception {
+    public static int viewReviews(String userID, Connection newConnect, String endingString) throws Exception {
         Connection gatherData = newConnect; // get the connection;
         String idToUse = userID; // get the id, even though it's static you shouldn't need it.
         int numOfQueries = -1;
         String[][] displayArr;
+        String[] actualArrChoice = new String[]{"rid", "station_name", "shopping", "connection_speed", "approval_status"};
+        String gatherQuery;
+
+        ArrayList<String> arrChoice = new ArrayList<>(Arrays.asList(actualArrChoice)); // we gotta check this.
+        Scanner getReviewData = new Scanner(System.in);
 
         while(true) {
             System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.
             System.out.println();
             System.out.println("-----------------REVIEWS TO VIEW-----------------");
+            if (!endingString.equals("REGULAR")) {
+                gatherQuery = "SELECT rid, station_name, shopping, connection_speed, comment, approval_status FROM Review WHERE passenger_ID='" + idToUse + "'" + " ORDER BY " + endingString;
+                System.out.println("GATHER QUERY: " + gatherQuery);
+            } else {
+                gatherQuery = "SELECT rid, station_name, shopping, connection_speed, comment, approval_status FROM Review WHERE passenger_ID='" + idToUse + "'";
+                System.out.println("GATHER QUERY: " + gatherQuery);
+            }
+            System.out.println("GOT PAST QUERY SELECTION, LINE 720");
             Statement gatherAllReviews = newConnect.createStatement();
-            String gatherQuery = "SELECT rid, station_name, shopping, connection_speed, comment, approval_status FROM Review WHERE passenger_ID='" + idToUse + "'";
             String gatherNumQuery = "SELECT COUNT(rid) FROM Review WHERE passenger_id='" + idToUse + "'";
             ResultSet reviewInfo = gatherAllReviews.executeQuery(gatherQuery); // this gets us all the info of the reviews.
             ResultSet reviewNum = gatherAllReviews.executeQuery(gatherNumQuery); // this gets us the numerical stuff.
             // SELECT rid, station_name, shopping, connection_speed, comment, approval_status FROM Station WHERE userID = passenger_ID;
+            System.out.println("CHECKING WHETHER EMPTY ARRAY OR ACTUAL ARRAY EXISTS.");
             if (!(reviewNum.isBeforeFirst())) {
                 System.out.println("THERE ARE NO REVIEWS PUBLISHED. RETURN TO THE MAIN GUI.");
                 return 0;
@@ -726,6 +742,7 @@ public class GUI {
                 displayArr[0][5] = "          APPROVAL_STATUS";
                 int rowInt = 1;
                 int colInt = 1;
+                System.out.println("ARRAY BEING FILLED IN.");
                 while (reviewInfo.next()) {
                     if (rowInt == numOfQueries) {break;}
                     while(colInt <= 6) {
@@ -737,10 +754,72 @@ public class GUI {
                 }
 
                 System.out.println(Arrays.deepToString(displayArr).replace("], ", "]\n\n"));
-                // TODO: BE ABLE TO SORT VARIOUS COLUMNS
-                // TODO DO EDIT REVIEW AND STATION DISPLAY PAGES
 
+                // be able to choose various things, such as the review and the station. Focus on this now.
+                System.out.println();
+
+                System.out.println("----------IMPORTANT INFORMATION TO READ--------------");
+                System.out.println("THERE ARE TWO THINGS YOU CAN DO - EITHER CHOOSE A REVIEW"
+                                   + " TO EDIT OR STATION TO LEARN MORE ABOUT, OR SORT/ORDER ALL COLUMNS EXCEPT FOR COMMENT.");
+                System.out.println();
+                //rid, station_name, shopping, connection_speed, comment, approval_status
+                System.out.println("If you want to choose a station or review, type in the indices of the array, where 00 refers to the first review with RID 1. 150 would be a review with RID 15.");
+                System.out.println();
+                System.out.println();
+                System.out.println("Or, if you want to sort columns, here are your column choices: rid, station_name, shopping, connection_speed, comment, approval_status");
+                System.out.println();
+                System.out.println();
+                System.out.println("To sort a column in regular order, type in: SORT rid ASC, or SORT connection_speed ASC");
+                System.out.println();
+                System.out.println();
+                System.out.println("Use SORT rid DESC to order rids in reverse, descending order.");
+                System.out.println();
+                System.out.println();
+                System.out.println("If you'd like to quit the page and be taken to the main GUI, type in EXIT.");
+                System.out.println();
+                System.out.println();
+                System.out.print("ENTER YOUR CHOICE NOW: ");
+                
+
+                String whatChoice = getReviewData.nextLine(); // get the result of what they want.
+                if (whatChoice.length() < 2) {
+                    System.out.println("INCORRECT ENTRY. TRY AGAIN.");
+                } else if (whatChoice.equalsIgnoreCase("exit")) {
+                    return 0;
+                } else if (checkIfNumeric(whatChoice)) {
+                    int checkInt = Integer.parseInt(whatChoice); // if this is a number, we have to do some checks.
+                    if (checkInt > (numOfQueries * 10 + 1) || (checkInt < 9) || (checkInt % 10 > 1)) { // some insane fuckery is happening here.
+                        System.out.println("These are unacceptable numerical choices. Pick again.");
+                    } else {
+                        int secondArrIndex = checkInt % 10;
+                        int firstArrIndex = checkInt / 10;
+                        System.out.println("This is the result of the index picked: " + displayArr[firstArrIndex][secondArrIndex]);
+                        System.out.println("EXITING.");
+                        System.exit(1); // if done correctly, this will allow us to pick either a review to edit or a station to look at.
+                    }
+                } else {
+                    String[] breakArr = whatChoice.split(" "); // assume we have a non-numeric string. We have to figure out how to actually order by.
+                    if (breakArr.length != 3) {
+                        System.out.println("You typed in an incorrect sorting string. Type again.");
+                    } else if (!arrChoice.contains(breakArr[1])) {
+                        System.out.println("You mistyped what can be sorted. Choose again from the list given. Follow exactly.");
+                    } else {
+                        String sendOut = breakArr[1] + " " + breakArr[2]; // we're sending, say "RID ASCENDING", or "RID DESCENDING." Watch.
+                        System.out.println("THIS IS THE SENDOUT: " + sendOut);
+                        return viewReviews(idToUse, gatherData, sendOut); // this completes the thing. It's fucking recursive.
+                    }
+                    
+                }                                                                               
             }
         }        
+    }
+
+    public static boolean checkIfNumeric(String checkString) {
+        try {
+            Integer.parseInt(checkString);
+            return true; // assumes that it did work.
+        } catch (NumberFormatException e) {
+            return false; // not numeric at all.
+        }
     }
 }

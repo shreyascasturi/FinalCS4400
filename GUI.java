@@ -822,4 +822,74 @@ public class GUI {
             return false; // not numeric at all.
         }
     }
+
+
+    public static int stationDisplay(String stationName, Connection newConnect) {
+        int approvedReviewsForStation = -1;
+        Connection getReviewsAddressEtc = newConnect;
+        String nameStation = stationName;
+        Statement connectOnStation = newConnect.createStatement();
+        String address = null;
+        String avgShopping = "AVERAGE SHOPPING: ";
+        String avgConnSpeed = "AVG CONN SPEED: ";
+
+        while(true) {
+            ArrayList<String> LinesList = new ArrayList<>();
+            String queryToGetStationInfo = "SELECT address, status FROM Station WHERE name='" + nameStation + "'";
+            String getLinesForStation = "SELECT line_name FROM Station_On_Line WHERE station_name='" + nameStation + "'";
+            String getReviewsForStation = "SELECT user, shopping, connection_speed, comment FROM Review WHERE station_name='" + nameStation +"' AND approval_status='pending'";
+            String getCountReviews = "SELECT COUNT(user) FROM Review WHERE station_name='" + nameStation +"' AND approval_status='pending'";
+            ResultSet StationInfoAddrStat = connectOnStation.executeQuery(queryToGetStationInfo);
+            ResultSet StationLines = connectOnStation.executeQuery(getLinesForStation);
+            ResultSet ReviewsForStationAppr = connectOnStation.executeQuery(getReviewsForStation);
+            ResultSet 
+            while(StationLines.next()) {
+                LinesList.add(StationLines.getString("line_name")); // add to LinesList;
+            }
+            
+            
+        }
+        
+    }
+    
+    public static int lineDisplay(String line, Connection newConnect) {
+        int numOfStops = -1; // set the numOfStops impossible
+        String nameLine = "Line NUMBER/NAME: "; // prep string
+        Connection lineConn = newConnect; // bring connection in
+        Statement stateLine = newConnect.createStatement(); // create statement
+        String[][] displayArr; // the array that'll be displayed.
+        String queryToExec = "SELECT station_name, order_number FROM Station_On_Line WHERE line_name='" + line + "'"; // query to execute.
+        String countQuery = "SELECT COUNT(station_name) FROM Station_On_Line WHERE line_name='" + line + "'"; // get the count.
+        ResultSet getStations = stateLine.executeQuery(queryToExec); // get the damn set.
+        ResultSet getCountStations = stateLine.executeQuery(countQuery); // get the count.
+        while(countQuery.next()) {
+            numOfStops = Integer.parseInt(getCountStations.getString("COUNT(station_name)"));
+        }
+        displayArr = new String[numOfStops + 1][2]; // ADD 1 because we start 1 row below.
+        displayArr[0][0] = "STATION"; // you know what this is, basic setup.
+        displayArr[0][1] = "ORDER";
+
+
+        int rowInt = 1;
+        int colInt = 1;
+        System.out.println("ARRAY BEING FILLED IN.");
+        while (getStations.next()) {
+            if (rowInt == numOfStops) {break;}
+            while(colInt <= 2) {
+                displayArr[rowInt][colInt - 1] =  getStations.getString(colInt);
+                colInt++;   
+            }
+            rowInt++;
+            colInt = 1;                    
+        }
+
+        System.out.println(Arrays.deepToString(displayArr).replace("], ", "]\n\n"));
+
+
+        // be able to choose various things, such as the review and the station. Focus on this now.
+        System.out.println();
+
+        System.exit(1);
+        // SELECT station_name, order_number FROM Station_On_Line WHERE line_name='name';
+    }
 }

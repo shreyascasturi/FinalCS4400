@@ -705,103 +705,110 @@ public class GUI {
 
                 Statement getAllCards = newConnect.createStatement();
 
-                String getCardsQuery = "SELECT type_of_card, purchase_date_time, uses_left, expiration_date  FROM Card WHERE user_ID='" + userID + "'"; // order by name, assume we only have to get from Cards.
-                String getCardQueryNum = "SELECT COUNT(purchase_date_time) FROM Card WHERE user_ID='" + userID + "'"; // get the count of names.nnn
-                // String getCardsQuery = "SELECT name FROM Card JOIN Card_On_Line WHERE Card_On_Line.Card_name = Card.name ORDER BY"; // this gets us the actual table of names.
-                // String getCardQueryNum = "SELECT COUNT(name) FROM Card JOIN Card_On_Line WHERE Card_On_Line.Card_name = Card.name"; // this gets us the count.
-                ResultSet getCards = getAllCards.executeQuery(getCardsQuery); // get the Cards.
-                ResultSet getNumCards = getAllCards.executeQuery(getCardQueryNum); // get the count of Cards.
-                int cardCount = -5; // set random num
-                while(getNumCards.next()) {
-                    cardCount = Integer.parseInt(getNumCards.getString("COUNT(purchase_date_time)")); // getNum = count of Cards.
-                }
-                String[] arrCards = new String[cardCount];
-                String[] arrCardTypes = new String[cardCount]; // create string array to hold the types of the Cards
-                String[] arrCardDate = new String[cardCount];
-                String[] arrUses = new String[cardCount];
-                String[] arrExpCardDate = new String[cardCount];
-                fillIndex = 0; // simple loop to go through ResultSet getCards.
-                while (getCards.next()) {
-                    arrCardTypes[fillIndex] = getCards.getString("type_of_card");
-                    arrCardDate[fillIndex] = getCards.getString("purchase_date_time"); // get the value out of the column "purchase_date_time"
-                    arrExpCardDate[fillIndex] = getCards.getString("expiration_date");
-                    arrUses[fillIndex] = getCards.getString("uses_left");
-                    String usesLeft = arrUses[fillIndex] == null ? "UNLIMITED" : arrUses[fillIndex];
-                    arrCards[fillIndex] = arrCardTypes[fillIndex] + " USES LEFT: " + usesLeft;
-                    fillIndex++;
-                }
+                while (true) {
+                    String getCardsQuery = "SELECT type_of_card, purchase_date_time, uses_left, expiration_date  FROM Card WHERE user_ID='" + userID + "'"; // order by name, assume we only have to get from Cards.
+                    String getCardQueryNum = "SELECT COUNT(purchase_date_time) FROM Card WHERE user_ID='" + userID + "'"; // get the count of names.nnn
+                    // String getCardsQuery = "SELECT name FROM Card JOIN Card_On_Line WHERE Card_On_Line.Card_name = Card.name ORDER BY"; // this gets us the actual table of names.
+                    // String getCardQueryNum = "SELECT COUNT(name) FROM Card JOIN Card_On_Line WHERE Card_On_Line.Card_name = Card.name"; // this gets us the count.
+                    ResultSet getCards = getAllCards.executeQuery(getCardsQuery); // get the Cards.
+                    ResultSet getNumCards = getAllCards.executeQuery(getCardQueryNum); // get the count of Cards.
+                    int cardCount = -5; // set random num
+                    while(getNumCards.next()) {
+                        cardCount = Integer.parseInt(getNumCards.getString("COUNT(purchase_date_time)")); // getNum = count of Cards.
+                    }
+                    String[] arrCards = new String[cardCount];
+                    String[] arrCardTypes = new String[cardCount]; // create string array to hold the types of the Cards
+                    String[] arrCardDate = new String[cardCount];
+                    String[] arrUses = new String[cardCount];
+                    String[] arrExpCardDate = new String[cardCount];
+                    fillIndex = 0; // simple loop to go through ResultSet getCards.
+                    while (getCards.next()) {
+                        arrCardTypes[fillIndex] = getCards.getString("type_of_card");
+                        arrCardDate[fillIndex] = getCards.getString("purchase_date_time"); // get the value out of the column "purchase_date_time"
+                        arrExpCardDate[fillIndex] = getCards.getString("expiration_date");
+                        arrUses[fillIndex] = getCards.getString("uses_left");
+                        String usesLeft = arrUses[fillIndex] == null ? "UNLIMITED" : arrUses[fillIndex];
+                        arrCards[fillIndex] = arrCardTypes[fillIndex] + " USES LEFT: " + usesLeft;
+                        fillIndex++;
+                    }
 
-                if (arrCards.length == 0) {
-                    System.out.println("You must purchase a card to go on a trip, returning to main menu");
-                    return 0;
-                }
-
-                String actualCardArray = Arrays.toString(arrCards); // turn this into a printable thing. finally, fucking use ARRAYS.
-                System.out.println("ARRAY FOR CARDS: " + Arrays.toString(arrCards)); // print array.
-
-                System.out.print("CHOOSE BY INDEX THE CARD YOU WISH TO USE; 0 BEING FIRST, N - 1 BEING THE NTH OR -1 TO QUIT: ");
-
-
-
-                LocalDate localDate = LocalDate.now();
-                int curYear = localDate.getYear();
-                int curMonth = localDate.getMonthValue();
-                int curDay = localDate.getDayOfMonth();
-
-                int cardInt = editor.nextInt();
-
-                if (cardInt == -1) {
-                    System.out.println("Returning to main menu");
-                    return 0;
-                }
-
-                String expYear = "9999";
-                String expMonth = "99";
-                String expDay = "99";
-                if (!(arrExpCardDate[cardInt] == null)) {
-                    expYear = arrExpCardDate[cardInt].substring(0, 4);
-                    expMonth = arrExpCardDate[cardInt].substring(5, 7);
-                    expDay = arrExpCardDate[cardInt].substring(8, arrExpCardDate[cardInt].length());
-                }
-
-                if (cardInt < 0 || cardInt >= cardCount) {
-                    System.out.println("Pick a number greater than 0 and less than or equal to n-1."); // check invalid INDEX
-                } else if ((!(arrUses[cardInt] == null) && arrUses[cardInt].equals("0")) || ((!(arrExpCardDate[cardInt] == null)) && (expYear.compareTo(String.valueOf(curYear)) < 0 || (expYear.equals(String.valueOf(curYear)) && expMonth.compareTo(curMonth < 10 ? "0" + curMonth : String.valueOf(curMonth)) < 0) || (expYear.equals(String.valueOf(curYear)) && expMonth.equals(curMonth < 10 ? "0" + curMonth : String.valueOf(curMonth)) && expDay.compareTo(curDay < 10 ? "0" + curDay : String.valueOf(curDay)) < 0)))) {
-
-                    System.out.println("Choose a valid card");
-                } else {
-                    System.out.println("YOU HAVE CHOSEN A TRIP STARTING FROM: " + arrStations[stationInt] + " AND USING CARD: " + arrCards[cardInt]);
-
-                    System.out.println("CHOOSE 1 CONFIRM");
-                    System.out.println("CHOOSE 2 CANCEL AND QUIT");
-                    System.out.print("ENTER CHOICE: ");
-
-                    Scanner ChoiceEditType = new Scanner(System.in);
-                    int choiceEditString = ChoiceEditType.nextInt();
-
-                    if (choiceEditString == 1) {
-
-
-
-                        System.out.println("");
-                        Statement tripcheck = newConnect.createStatement();
-                        String passQuery = "INSERT INTO Trip VALUES ('" + userID + "', '" + arrCardTypes[cardInt] + "', '" + arrCardDate[cardInt] + "', sysdate(), NULL, '" + arrStations[stationInt] + "', NULL)";
-
-                        //String passQuery = "UPDATE User SET ID = '" + userID + "', first_name = '" + firstName + "', minit = '" + mi + "', last_name = '" + lastName + "', password = '" + pass1 + "', passenger_email = '" + email + "' WHERE ID='" + userID + "'";
-                        //String passQuery = "INSERT INTO User VALUES ('" + userID + "', '" + firstName + "', '" + mi + "', '" + lastName + "', '" + pass1 + "', '" + email + "')";
-                        ResultSet tripSet = tripcheck.executeQuery(passQuery);
-                        if (!arrCardTypes[cardInt].equals("T-mes") || !arrCardTypes[cardInt].equals("T-jove")) {
-                            String updateQuery = "UPDATE Card SET uses_left=uses_left - 1 WHERE user_ID='" + userID + "' AND type_of_card='" + arrCardTypes[cardInt] + "' AND purchase_date_time='" + arrCardDate[cardInt] + "'";
-                            tripcheck.executeQuery(updateQuery);
-                        }
-                        // String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
-                        // ResultSet testSet = rgstrcheck.executeQuery(testQuery);
-                        System.out.println("You have embarked on a trip");
+                    if (arrCards.length == 0) {
+                        System.out.println("You must purchase a card to go on a trip, returning to main menu");
                         return 0;
+                    }
 
+
+
+                    String actualCardArray = Arrays.toString(arrCards); // turn this into a printable thing. finally, fucking use ARRAYS.
+                    System.out.println("ARRAY FOR CARDS: " + Arrays.toString(arrCards)); // print array.
+
+                    System.out.print("CHOOSE BY INDEX THE CARD YOU WISH TO USE; 0 BEING FIRST, N - 1 BEING THE NTH OR -1 TO QUIT: ");
+
+
+
+                    LocalDate localDate = LocalDate.now();
+                    int curYear = localDate.getYear();
+                    int curMonth = localDate.getMonthValue();
+                    int curDay = localDate.getDayOfMonth();
+
+                    int cardInt = editor.nextInt();
+
+                    if (cardInt == -1) {
+                        System.out.println("Returning to main menu");
+                        return 0;
+                    }
+
+                    if (cardInt < 0 || cardInt >= cardCount) {
+                        System.out.println("Pick a number greater than 0 and less than or equal to n-1."); // check invalid INDEX
                     } else {
-                        System.out.println("You have cancelled your trip and are returning to main menu");
-                        return 0;
+
+                        String expYear = "9999";
+                        String expMonth = "99";
+                        String expDay = "99";
+                        if (!(arrExpCardDate[cardInt] == null)) {
+                            expYear = arrExpCardDate[cardInt].substring(0, 4);
+                            expMonth = arrExpCardDate[cardInt].substring(5, 7);
+                            expDay = arrExpCardDate[cardInt].substring(8, arrExpCardDate[cardInt].length());
+                        }
+
+                        if ((!(arrUses[cardInt] == null) && arrUses[cardInt].equals("0")) || ((!(arrExpCardDate[cardInt] == null)) && (expYear.compareTo(String.valueOf(curYear)) < 0 || (expYear.equals(String.valueOf(curYear)) && expMonth.compareTo(curMonth < 10 ? "0" + curMonth : String.valueOf(curMonth)) < 0) || (expYear.equals(String.valueOf(curYear)) && expMonth.equals(curMonth < 10 ? "0" + curMonth : String.valueOf(curMonth)) && expDay.compareTo(curDay < 10 ? "0" + curDay : String.valueOf(curDay)) < 0)))) {
+
+                            System.out.println("Choose a valid card");
+                        } else {
+                            System.out.println("YOU HAVE CHOSEN A TRIP STARTING FROM: " + arrStations[stationInt] + " AND USING CARD: " + arrCards[cardInt]);
+
+                            System.out.println("CHOOSE 1 CONFIRM");
+                            System.out.println("CHOOSE 2 CANCEL AND QUIT");
+                            System.out.print("ENTER CHOICE: ");
+
+                            Scanner ChoiceEditType = new Scanner(System.in);
+                            int choiceEditString = ChoiceEditType.nextInt();
+
+                            if (choiceEditString == 1) {
+
+
+
+                                System.out.println("");
+                                Statement tripcheck = newConnect.createStatement();
+                                String passQuery = "INSERT INTO Trip VALUES ('" + userID + "', '" + arrCardTypes[cardInt] + "', '" + arrCardDate[cardInt] + "', sysdate(), NULL, '" + arrStations[stationInt] + "', NULL)";
+
+                                //String passQuery = "UPDATE User SET ID = '" + userID + "', first_name = '" + firstName + "', minit = '" + mi + "', last_name = '" + lastName + "', password = '" + pass1 + "', passenger_email = '" + email + "' WHERE ID='" + userID + "'";
+                                //String passQuery = "INSERT INTO User VALUES ('" + userID + "', '" + firstName + "', '" + mi + "', '" + lastName + "', '" + pass1 + "', '" + email + "')";
+                                ResultSet tripSet = tripcheck.executeQuery(passQuery);
+                                if (!arrCardTypes[cardInt].equals("T-mes") || !arrCardTypes[cardInt].equals("T-jove")) {
+                                    String updateQuery = "UPDATE Card SET uses_left=uses_left - 1 WHERE user_ID='" + userID + "' AND type_of_card='" + arrCardTypes[cardInt] + "' AND purchase_date_time='" + arrCardDate[cardInt] + "'";
+                                    tripcheck.executeQuery(updateQuery);
+                                }
+                                // String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
+                                // ResultSet testSet = rgstrcheck.executeQuery(testQuery);
+                                System.out.println("You have embarked on a trip");
+                                return 0;
+
+                            } else {
+                                System.out.println("You have cancelled your trip and are returning to main menu");
+                                return 0;
+                            }
+                        }
                     }
                 }
             }

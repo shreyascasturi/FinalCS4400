@@ -1498,13 +1498,14 @@ public class GUI {
 
 
     public static int reviewPassengerReviewsADMIN(Connection newConnect) throws Exception {
-        Connection getStationReviews = newConnect; // label the conn.
-        Statement getReviewQuery = newConnect.createStatement(); // label the statement
-        int countOfReviews = -1;
-        String[][] displayArr;
-        Scanner reviewAdminScan = new Scanner(System.in); // create the scanner.
-
+        
         while(true) {
+            Connection getStationReviews = newConnect; // label the conn.
+            Statement getReviewQuery = newConnect.createStatement(); // label the statement
+            int countOfReviews = -1;
+            String[][] displayArr;
+            Scanner reviewAdminScan = new Scanner(System.in); // create the scanner.
+
 
             System.out.println("-------ENTERING REVIEW AREA AS ADMIN ---------");
             System.out.printf("%n%n");
@@ -1571,7 +1572,7 @@ public class GUI {
                     System.out.println("YOU DIDN'T TYPE IN EXIT OR A NUMBER SO THIS IS WRONG. CHOOSE AGAIN.");
                 }
                 String[] splitChoiceAdmin = choiceMade.split(""); // split into two items.
-                if (!(splitChoiceAdmin[0].equalsIgnoreCase("a") || splitChoiceAdmin[0].equalsIgnoreCase("b")) || (Integer.parseInt(splitChoiceAdmin[1]) > countOfReviews)) {
+                if (!(splitChoiceAdmin[0].equalsIgnoreCase("a") || splitChoiceAdmin[0].equalsIgnoreCase("r")) || (Integer.parseInt(splitChoiceAdmin[1]) > countOfReviews)) {
                     System.out.println("FRICKING PISSING ME OFF WITH THESE INCORRECT QUERIES PICK AGAIN AND DO IT RIGHT THIS TIME");
                     System.out.println("shopp");
                 } else {
@@ -1581,10 +1582,11 @@ public class GUI {
                     String connInt = displayArr[Integer.parseInt(splitChoiceAdmin[1])][3];
                     String commentReview = displayArr[Integer.parseInt(splitChoiceAdmin[1])][4];
 
-                    System.out.println("I'M UPDATING/DELETING THIS REVIEW: " + "userName: " + userName + " station: " + stationParticularReview + " shoppingInt: " + shoppingInt + " connInt: " + connInt + " commentReview: " + commentReview);
+                    System.out.println("I'M UPDATING/DELETING THIS REVIEW: " + "userName: " + userName + ", station: " + stationParticularReview + ", shoppingInt: " + shoppingInt + ", connInt: " + connInt + ", commentReview: " + commentReview);
                     System.out.println("%n%n%n%n");
-                    String updateQuery = "UPDATE Review SET approval_status='" + (splitChoiceAdmin[0].equalsIgnoreCase("a") ? "approved" : "rejected") + "' WHERE passenger_id='" + userName + "' AND station_name='" + stationParticularReview + " AND shopping=" + Integer.parseInt(shoppingInt)
-                        + "' AND connection_speed=" + Integer.parseInt(connInt) + " AND comment=" + (commentReview.equals("NULL") ? "NULL" : ("'" + commentReview + "'")) + "";
+                    String updateQuery = "UPDATE Review SET approval_status='" + (splitChoiceAdmin[0].equalsIgnoreCase("a") ? "approved" : "rejected") + "' WHERE passenger_id='" + userName + "' AND station_name='" + stationParticularReview + "' AND shopping=" + Integer.parseInt(shoppingInt)
+                        + " AND connection_speed=" + Integer.parseInt(connInt) + " AND comment='" + commentReview + "'";
+                    System.out.println("update query is: " + updateQuery);
                     Statement updateQueryRejectAccept = getStationReviews.createStatement();
                     ResultSet someSet = updateQueryRejectAccept.executeQuery(updateQuery);
                 }

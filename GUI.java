@@ -857,8 +857,8 @@ public class GUI {
         String[] arrTos = new String[tripCount];
 
         int fillIndex = 0; // simple loop to go through ResultSet getTrips.
-        int fmax = 4;
-        int tmax = 2;
+        int fmax = 4; // longest length of a FROM STATION spacing purposes.
+        int tmax = 2; // longest length of a TO STATION spacing purposes.
 
         while (getTrips.next()) {
             arrCards[fillIndex] = getTrips.getString("card_type"); // get the value out of the column "name"
@@ -993,7 +993,6 @@ public class GUI {
                         System.out.println("Returning to main menu");
                         return 0;
                     } else {
-
                         String upTripStart = arrStartDates[upTripInt];
                         String upTripFrom = arrFroms[upTripInt];
                         String upTripCardType = arrCards[upTripInt];
@@ -1120,7 +1119,7 @@ public class GUI {
                                    + " TO EDIT OR STATION TO LEARN MORE ABOUT, OR SORT/ORDER ALL COLUMNS EXCEPT FOR COMMENT.");
                 System.out.println();
                 //rid, station_name, shopping, connection_speed, comment, approval_status
-                System.out.println("If you want to choose a station or review, type in the indices of the array, where 00 refers to the first review with RID 1. 150 would be a review with RID 15.");
+                System.out.println("If you want to choose a station or review, type in the indices of the array, where 10 refers to the first review with RID 1. 150 would be a review with RID 15.");
                 System.out.println();
                 System.out.println();
                 System.out.println("Or, if you want to sort columns, here are your column choices: rid, station_name, shopping, connection_speed, comment, approval_status");
@@ -1151,6 +1150,12 @@ public class GUI {
                         int secondArrIndex = checkInt % 10;
                         int firstArrIndex = checkInt / 10;
                         System.out.println("This is the result of the index picked: " + displayArr[firstArrIndex][secondArrIndex]);
+                        if (secondArrIndex == 1) {
+                            stationDisplay(displayArr[firstArrIndex][secondArrIndex], gatherData); // the station and line displays.
+                        } else {
+                            System.exit(1); // for the review.
+                        }
+                        
                         System.out.println("EXITING.");
                         System.exit(1); // if done correctly, this will allow us to pick either a review to edit or a station to look at.
                     }
@@ -1183,71 +1188,200 @@ public class GUI {
 
     public static int stationDisplay(String stationName, Connection newConnect) throws Exception {
         int approvedReviewsForStation = -1;
+        double avgShop = 0.0;
+        double avgConn = 0.0;
         Connection getReviewsAddressEtc = newConnect;
-        String nameStation = stationName;
+        String nameStation = stationName.trim();
         Statement connectOnStation = newConnect.createStatement();
+        String[] twoArr = new String[2];
         String address = null;
+        String status = null;
         String avgShopping = "AVERAGE SHOPPING: ";
         String avgConnSpeed = "AVG CONN SPEED: ";
+        String[][] reviewArr;
+        Scanner answerQuestion = new Scanner(System.in);
 
         while(true) {
-            ArrayList<String> LinesList = new ArrayList<>();
+            ArrayList<String> LinesList = new ArrayList<>(); // creates an array list to add names of lines.
             String queryToGetStationInfo = "SELECT address, status FROM Station WHERE name='" + nameStation + "'";
             String getLinesForStation = "SELECT line_name FROM Station_On_Line WHERE station_name='" + nameStation + "'";
-            String getReviewsForStation = "SELECT user, shopping, connection_speed, comment FROM Review WHERE station_name='" + nameStation +"' AND approval_status='pending'";
-            String getCountReviews = "SELECT COUNT(user) FROM Review WHERE station_name='" + nameStation +"' AND approval_status='pending'";
-            ResultSet StationInfoAddrStat = connectOnStation.executeQuery(queryToGetStationInfo);
-            ResultSet StationLines = connectOnStation.executeQuery(getLinesForStation);
-            ResultSet ReviewsForStationAppr = connectOnStation.executeQuery(getReviewsForStation);
+            String getReviewsForStation = "SELECT passenger_ID, shopping, connection_speed, comment FROM Review WHERE station_name='" + nameStation +"' AND approval_status='approved'";
+            String getCountReviews = "SELECT COUNT(passenger_ID) FROM Review WHERE station_name='" + nameStation +"' AND approval_status='approved'";
+            String getAvgShoppingConn = "SELECT AVG(shopping), AVG(connection_speed) FROM Review WHERE station_name='" + nameStation + "' AND approval_status='approved'";
+            ResultSet StationInfoAddrStat = connectOnStation.executeQuery(queryToGetStationInfo); // address and info
+            ResultSet StationLines = connectOnStation.executeQuery(getLinesForStation); // get the line names
+            ResultSet ReviewsForStationAppr = connectOnStation.executeQuery(getReviewsForStation); // get the review info
+            ResultSet CountReviews = connectOnStation.executeQuery(getCountReviews); // get the counts
+            ResultSet Averages = connectOnStation.executeQuery(getAvgShoppingConn); // get the averages of conn and shopping.
             // ResultSet;
             while(StationLines.next()) {
-                LinesList.add(StationLines.getString("line_name")); // add to LinesList;
+                LinesList.add(StationLines.getString("line_name")); // add to LinesList all the lines.
+            }
+            while(StationInfoAddrStat.next()) { // get the address and status.
+                address = StationInfoAddrStat.getString("address");
+                status = StationInfoAddrStat.getString("status");
+            }
+            while (CountReviews.next()) { // get the counts of the reviews so that we can actually create the array.
+                approvedReviewsForStation = Integer.parseInt(CountReviews.getString("COUNT(passenger_ID)"));
             }
 
-            System.exit(1);
+            if (approvedReviewsForStation == 0) { // we'll have an empty array.
+                reviewArr = new String[approvedReviewsForStation + 1][4]; // create the array.
+                reviewArr[0][0] = "USER";
+                reviewArr[0][1] = "SHOPPING";
+                reviewArr[0][2] = "CONNECTION_SPEED";
+                reviewArr[0][3] = "COMMENT"; // labeling categories.
+
+                int rowInt = 1;
+                int colInt = 1;
+                while (ReviewsForStationAppr.next()) {
+                    if (rowInt > approvedReviewsForStation) {break;}
+                    while(colInt <= 6) {
+                        reviewArr[rowInt][colInt - 1] = ReviewsForStationAppr.getString(colInt);                    
+                        colInt++;   
+                    }
+                    rowInt++;
+                    colInt = 1;                    
+                }
+
+                System.out.println("STATION NAME: " + nameStation);
+                System.out.println("STATUS: " + status);
+
+
+                System.out.println("LINES: " + LinesList.toString());
+
+                System.out.printf("%n%n%n%n");
+
+                System.out.println(Arrays.deepToString(reviewArr).replace("], ", "]\n\n"));
+
+                System.out.println("TYPE IN 'EXIT', WITHOUT QUOTES, BECAUSE EVERYTHING IS EMPTY: ");
+                if (!answerQuestion.nextLine().equalsIgnoreCase("exit")) {
+                    System.out.println("Pick again.");
+                } else {
+                    return 0;
+                }
+                
+                                
+            } else {
+                reviewArr = new String[approvedReviewsForStation + 1][4]; // create the array.
+                reviewArr[0][0] = "USER";
+                reviewArr[0][1] = "SHOPPING";
+                reviewArr[0][2] = "CONNECTION_SPEED";
+                reviewArr[0][3] = "COMMENT";
+
+                int rowInt = 1;
+                int colInt = 1;
+                while (ReviewsForStationAppr.next()) {
+                    if (rowInt > approvedReviewsForStation) {break;}
+                    while(colInt <= 6) {
+                        reviewArr[rowInt][colInt - 1] = ReviewsForStationAppr.getString(colInt);                    
+                        colInt++;   
+                    }
+                    rowInt++;
+                    colInt = 1;                    
+                }
+
+                while (Averages.next()) {
+                    avgShop = Double.parseDouble(Averages.getString("AVG(shopping)"));
+                    avgConn = Double.parseDouble(Averages.getString("AVG(connection_speed)"));
+                }
+
+
+                System.out.println("STATION NAME: " + nameStation);
+                System.out.println("STATUS: " + status);
+
+                
+
+
+                System.out.println("LINES: " + LinesList.toString());
+
+
+                System.out.printf("%n%n%n");
+                System.out.println(avgShopping + avgShop);
+                System.out.println(avgConnSpeed + avgConn);
+
+
+                System.out.println(Arrays.deepToString(reviewArr).replace("], ", "]\n\n"));                                  
+
+                System.out.printf("%n%n%n");
+
+                int lengthOfList = LinesList.size();
+
+                System.out.println("You can choose an index from the lines array, or type in EXIT to go back to the Reviews page.");
+                System.out.printf("MAKE A CHOICE: ");
+                String answerToQuest = answerQuestion.nextLine();
+                if (answerToQuest.equalsIgnoreCase("exit")) {
+                    System.out.println("EXITING STATION DISPLAY");
+                    return 0;
+                } else {
+                    if (checkIfNumeric(answerToQuest) && Integer.parseInt(answerToQuest) >= 0 && Integer.parseInt(answerToQuest) <= lengthOfList) {
+                        lineDisplay(LinesList.get((int)(Integer.parseInt(answerToQuest))), newConnect, "REGULAR"); // goto line display.
+                    } else {
+                        System.out.println("WRONG CHOICE. PICK ANOTHER.");
+                    }
+                }
+                
+            }
             
         }
         
     }
     
-    public static int lineDisplay(String line, Connection newConnect) throws Exception {
+    public static int lineDisplay(String line, Connection newConnect, String addition) throws Exception {
         int numOfStops = -1; // set the numOfStops impossible
         String nameLine = "Line NUMBER/NAME: "; // prep string
         Connection lineConn = newConnect; // bring connection in
         Statement stateLine = newConnect.createStatement(); // create statement
         String[][] displayArr; // the array that'll be displayed.
-        String queryToExec = "SELECT station_name, order_number FROM Station_On_Line WHERE line_name='" + line + "'"; // query to execute.
-        String countQuery = "SELECT COUNT(station_name) FROM Station_On_Line WHERE line_name='" + line + "'"; // get the count.
-        ResultSet getStations = stateLine.executeQuery(queryToExec); // get the damn set.
-        ResultSet getCountStations = stateLine.executeQuery(countQuery); // get the count.
-        while(getCountStations.next()) {
-            numOfStops = Integer.parseInt(getCountStations.getString("COUNT(station_name)"));
-        }
-        displayArr = new String[numOfStops + 1][2]; // ADD 1 because we start 1 row below.
-        displayArr[0][0] = "STATION"; // you know what this is, basic setup.
-        displayArr[0][1] = "ORDER";
+        Scanner anotherScan = new Scanner(System.in);
+        String queryToExec = null;
 
-
-        int rowInt = 1;
-        int colInt = 1;
-        System.out.println("ARRAY BEING FILLED IN.");
-        while (getStations.next()) {
-            if (rowInt == numOfStops) {break;}
-            while(colInt <= 2) {
-                displayArr[rowInt][colInt - 1] =  getStations.getString(colInt);
-                colInt++;   
+        while(true) {
+            if (addition.equals("REGULAR")) {
+                queryToExec = "SELECT station_name, order_number FROM Station_On_Line WHERE line_name='" + line + "' ORDER BY " + addition; // query to execute.
+            } else {
+                queryToExec = "SELECT station_name, order_number FROM Station_On_Line WHERE line_name='" + line + "'"; // query to execute.
             }
-            rowInt++;
-            colInt = 1;                    
-        }
+            String countQuery = "SELECT COUNT(station_name) FROM Station_On_Line WHERE line_name='" + line + "'"; // get the count.
+            ResultSet getStations = stateLine.executeQuery(queryToExec); // get the damn set.
+            ResultSet getCountStations = stateLine.executeQuery(countQuery); // get the count.
+            while(getCountStations.next()) {
+                numOfStops = Integer.parseInt(getCountStations.getString("COUNT(station_name)"));
+            }
+            displayArr = new String[numOfStops + 1][2]; // ADD 1 because we start 1 row below.
+            displayArr[0][0] = "STATION"; // you know what this is, basic setup.
+            displayArr[0][1] = "ORDER";
 
-        System.out.println(Arrays.deepToString(displayArr).replace("], ", "]\n\n"));
+            int rowInt = 1;
+            int colInt = 1;
+            System.out.println("ARRAY BEING FILLED IN.");
+            while (getStations.next()) {
+                if (rowInt > numOfStops) {break;}
+                while(colInt <= 2) {
+                    displayArr[rowInt][colInt - 1] =  getStations.getString(colInt);
+                    colInt++;   
+                }
+                rowInt++;
+                colInt = 1;                    
+            }
+
+            System.out.println(Arrays.deepToString(displayArr).replace("], ", "]\n\n"));
 
 
-        // be able to choose various things, such as the review and the station. Focus on this now.
-        System.out.println();
+            // be able to choose various things, such as the review and the station. Focus on this now.
+            System.out.println();
 
-        return 0;        
-        // SELECT station_name, order_number FROM Station_On_Line WHERE line_name='name';
+            System.out.printf("Type in EXIT to get out of this page and back to the previous page, or specify sorting by typing SORT <category> ASC/DESC, respectively: ");
+
+            String lineChoice = anotherScan.nextLine();
+            if (lineChoice.equalsIgnoreCase("EXIT")) {
+                return 0;
+            } else {
+                String[] choiceArr = lineChoice.split(" ");
+                String choiceMake = choiceArr[1] + " " + choiceArr[2];
+                return lineDisplay(line, newConnect, choiceMake);
+            }
+            
+        }                
     }
 }

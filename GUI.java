@@ -5,7 +5,7 @@ import java.sql.*; // import the big package.
 import java.time.LocalDate;
 public class GUI {
     public static String userID = ""; // set the basic String.
-    public static boolean isAdmin  = false; // set the boolean as false.    
+    public static boolean isAdmin  = false; // set the boolean as false.
     public static void main(String[] args) throws Exception {
         while (true) {
             //Scanner ChoiceIntroPage = new Scanner(System.in);
@@ -108,7 +108,7 @@ public class GUI {
                                 ResultSet adminSet = adminCheck.executeQuery(adminQuery); //
                                 if (!(adminSet.isBeforeFirst())) {
                                     System.out.println("Congrats, you're now logged in.");
-                                    while(true) {                                     
+                                    while(true) {
                                         int passengerGUIresult = MainPassengerGUI(); // check how this works
                                         if (passengerGUIresult == 1) {
                                             int leaveReview = leaveReview(userID, newConnect); // LEAVE REVIEW
@@ -121,7 +121,7 @@ public class GUI {
                                             System.out.println();
                                         } else if (passengerGUIresult == 4) { // GO ON TRIP
                                             int tripCreatesuccess = goOnTrip(userID);
-                                            System.out.println();  
+                                            System.out.println();
                                         } else if (passengerGUIresult == 5) { // VIEW TRIP
                                             int viewTripSuccess = viewTrip(userID, "card_type");
                                             System.out.println();
@@ -149,33 +149,32 @@ public class GUI {
                                     while(true) {                                     
                                         int adminGUIresult = MainAdminGUI(); // check how this works
                                         if (adminGUIresult == 1) { // VIEW TRIPS
-                                            //                                            int leaveReview = reviewPassengerReviewsADMIN(newConnect);
-                                            System.out.println(); 
-                                        } else if (adminGUIresult == 2) { // BUY CARD
-                                            int viewResults = viewReviews(userID, newConnect, "REGULAR");
-                                            System.out.println();
-                                        } else if (adminGUIresult == 3) { // GO ON TRIP
-                                            int cardSuccess = buyCard(userID); 
-                                            System.out.println();
-                                        } else if (adminGUIresult == 4) { // REVIEW PASSENGER REVIEWS
-                                            int tripCreatesuccess = reviewPassengerReviewsADMIN(newConnect);
-                                            System.out.println();  
-                                        } else if (adminGUIresult == 5) { // EDIT PROFILE
                                             int viewTripSuccess = viewTrip(userID, "card_type");
                                             System.out.println();
-                                        } else if (adminGUIresult == 6) { // ADD STATION
-                                            int editSuccess = editUser(userID);
-                                            if (editSuccess == -1) {
-                                                return 0; // get back to the welcoming screen.
-                                            }
+                                        } else if (adminGUIresult == 2) { // BUY CARD
+                                            int cardSuccess = buyCard(userID);                                             
                                             System.out.println();
-                                        } else if (adminGUIresult == 7) { // ADD LINE
+                                        } else if (adminGUIresult == 3) { // GO ON TRIP
+                                            int tripCreateSuccess = goOnTrip(userID);
+                                            System.out.println();                                            
+                                        } else if (adminGUIresult == 4) { // REVIEW PASSENGER REVIEWS
+                                            int viewReviews = reviewPassengerReviewsADMIN(newConnect);                                            
+                                            System.out.println();  
+                                        } else if (adminGUIresult == 5) { // EDIT PROFILE
+                                            int editSuccess = editAdmin(userID);
+                                            System.out.println();
+                                        } else if (adminGUIresult == 6) { // ADD STATION
+                                            int stationAddSuccess = addStation();
+                                            System.out.println();
+                                        } else if (adminGUIresult == 7) { // GOTO LOGIN SCREEN
+                                            int lineAddSuccess = addLine();
+                                            System.out.println();
                                             break; // this should break out of the inner loop about the password filling in and go straight to the login screen.
-                                        } else if (adminGUIresult == 8) { // GOTO LOGIN
-                                            break; // this takes us to the welcome screen.
-                                        } else if (adminGUIresult == 9) { // GOTO WELCOME
-                                            return 0; // this quits the app and gives us the quit screen.                                            
-                                        } else if (adminGUIresult == 10) { // GOTO FULL EXIT.
+                                        } else if (adminGUIresult == 8) {
+                                            break;// GOTO LOGIN                               
+                                        } else if (adminGUIresult == 9) { // QUIT TO WELCOME
+                                            return 0;
+                                        } else if (adminGUIresult == 10) { // QUIT FULLY.
                                             return -1;                                            
                                         } else {
                                             System.out.println("This should never be reached at all. This is in the passengerGui check in checkLogin.");
@@ -266,7 +265,7 @@ public class GUI {
         while(true) {
             System.out.println("------------ MAIN PAGE ---------------------");
             System.out.println();
-            System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.           
+            System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.
             System.out.printf("CHOOSE A NUMBER TO EXPLORE DIFFERENT OPTIONS. %n 1. Leave Review %n 2. View Reviews %n 3. Buy Card %n 4. Go On Trip %n 5. View Trips %n"
                               + " 6. Edit Profile %n 7. Goto Login %n 8. Goto Welcome Screen %n 9. Quit Fully %n");
             System.out.print("CHOOSE AN OPTION: ");
@@ -291,7 +290,7 @@ public class GUI {
                 return 4; //return 4(Go to Go On Trip screen)
             } else if (choosePassengerInt == 5) { // View Trip
                 System.out.println("--------------VIEWING TRIPS----------");
-                return 5;                
+                return 5;
             } else if (choosePassengerInt == 6) { // edit profile
                 System.out.println("------------EDIT USER INFORMATION------------");
                 System.out.println("");
@@ -317,7 +316,7 @@ public class GUI {
             } else {
                 System.out.println("You chose an incorrect number. Try again.");
             }
-        }        
+        }
          // breaks out of the big while-loop, will hit if exit at password.
     }
 
@@ -459,7 +458,7 @@ public class GUI {
          int shoppingRating = -1; // initialization of ratings stuff.
          int connectionRating = -1;
          String nameOfStation = null;
-         String commentLeft = null;               
+         String commentLeft = null;
          // We want the stations that are admin-approved AND are on admin-approved lines.
          String getStationsQuery = "SELECT name FROM Station ORDER BY name"; // order by name, assume we only have to get from stations.
          String getStationQueryNum = "SELECT COUNT(name) FROM Station"; // get the count of names.nnn
@@ -479,7 +478,7 @@ public class GUI {
          }
 
          System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.
-         
+
          String actualArray = Arrays.toString(arrStations); // turn this into a printable thing. finally, fucking use ARRAYS.
 
          while(true) { // a massive loop because fuck
@@ -513,7 +512,7 @@ public class GUI {
                                  commentLeft = captureReview.nextLine();
                                  if (commentLeft.length() == 0 || commentLeft.equals("NULL")) {
                                      commentLeft = "NULL";
-                                 } 
+                                 }
                                  ResultSet r = getAllStations.executeQuery("SELECT COUNT(rid) AS rowcount FROM Review WHERE passenger_ID='" + userID + "'");
                                  r.next();
                                  int count = r.getInt("rowcount") + 1;
@@ -541,7 +540,7 @@ public class GUI {
      }
 
     public static int buyCard(String userID) throws Exception {
-        while(true) {                   
+        while(true) {
             System.out.println();
             System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user. // random identifying nonsense
             System.out.println("CHOOSE 1 FOR T-mes");
@@ -595,7 +594,7 @@ public class GUI {
         }
 
     }
-    
+
 
     public static int insertCard(String userID, String type, String uses) throws Exception{
         Connection newConnect = getConnection();
@@ -612,7 +611,7 @@ public class GUI {
         if (curDay < 10) { //checks if day is single digit so sql will accept it
             realDay = "0" + realDay;
         }
-        
+
         String expDate = type.equals("T-10") ? "NULL" : type.equals("T-jove") ? "'" + realYear + "-" + ((curMonth + 3) % 12) + "-" + realDay + "'" : "'" + realYear + "-" + ((curMonth + 1) % 12) + "-" + realDay + "'";//sets expiration date accomodating for edge cases
         //String expDate = type.equals("T-10") ? "NULL" : type.equals("T-jove") ? "DATEADD(CAST (sysdate() AS date), INTERVAL 3 month)" : "DATEADD(month, 1, CAST (sysdate() AS date) )";
         //String expDate = "2020-10-03";
@@ -641,7 +640,7 @@ public class GUI {
         while (true) {
             System.out.println("CHOOSE 1 TO UPDATE ACCOUNT");
             System.out.println("CHOOSE 2 TO DELETE ACCOUNT");
-            System.out.println("CHOOSE 3 TO QUIT TO MAIN GUI"); 
+            System.out.println("CHOOSE 3 TO QUIT TO MAIN GUI");
             System.out.print("ENTER CHOICE: ");
 
             Scanner ChoiceEditType = new Scanner(System.in);
@@ -663,7 +662,7 @@ public class GUI {
                         System.out.println("You exited the editor at FirstName. Good-bye.");
                         return 0; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
                     } else {
-                        if (firstName.length() == 0) {
+                        if (firstName.length() == 0 || firstName.equals("NULL")) {
                             System.out.println("Type a first name please");
                         } else {
                             while (true) {
@@ -674,72 +673,83 @@ public class GUI {
                                     System.out.println("You exited the editor at Middle Initial. Good-bye.");
                                     return 0; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
                                 } else {
-                                    while (true) {
-                                        System.out.println("ENTER LAST NAME: ");
-                                        lastName = editor.nextLine();
-                                        if (lastName.equalsIgnoreCase("exit")) {
-                                            System.out.println("You exited the editor at LastName. Good-bye.");
-                                            return 0;
-                                        } else {
-                                            if (lastName.length() == 0) {
-                                                System.out.println("Type a last name please");
+                                    if (mi.length() > 1 && !mi.equals("NULL")) {
+                                        System.out.println("Middle initial should be one character.");
+                                    } else {
+                                        while (true) {
+                                            System.out.println("ENTER LAST NAME: ");
+                                            lastName = editor.nextLine();
+                                            if (lastName.equalsIgnoreCase("exit")) {
+                                                System.out.println("You exited the editor at LastName. Good-bye.");
+                                                return 0;
                                             } else {
-                                                while (true) {
-                                                    System.out.println("ENTER EMAIL: ");
-                                                    email = editor.nextLine();
-                                                    if (email.equalsIgnoreCase("exit")) {
-                                                        System.out.println("You exited the editor at Email. Good-bye.");
-                                                        return 0;
-                                                    } else {
-                                                        if (email.length() == 0) {
-                                                            System.out.println("Type an email please");
+                                                if (lastName.length() == 0 || lastName.equals("NULL")) {
+                                                    System.out.println("Type a last name please");
+                                                } else {
+                                                    while (true) {
+                                                        System.out.println("ENTER EMAIL: ");
+                                                        email = editor.nextLine();
+                                                        if (email.equalsIgnoreCase("exit")) {
+                                                            System.out.println("You exited the editor at Email. Good-bye.");
+                                                            return 0;
                                                         } else {
-                                                            while (true) {
-                                                                System.out.println("ENTER USERID: ");
-                                                                userID = editor.nextLine();
-                                                                if (userID.equalsIgnoreCase("exit")) {
-                                                                    System.out.println("You exited the editor at UserID. Good-bye.");
-                                                                    return 0;
-                                                                } else {
-                                                                    if (userID.length() == 0) {
-                                                                        System.out.println("Type a UserID please");
+                                                            if (email.length() == 0 || email.equals("NULL")) {
+                                                                System.out.println("Type an email please");
+                                                            } else {
+                                                                while (true) {
+                                                                    System.out.println("ENTER USERID: ");
+                                                                    userID = editor.nextLine();
+                                                                    if (userID.equalsIgnoreCase("exit")) {
+                                                                        System.out.println("You exited the editor at UserID. Good-bye.");
+                                                                        return 0;
                                                                     } else {
-                                                                        while (true) {
-                                                                            System.out.println("ENTER PASSWORD: ");
-                                                                            pass1 = editor.nextLine();
-                                                                            if (pass1.equalsIgnoreCase("exit")) {
-                                                                                System.out.println("You exited the editor at Password. Good-bye.");
-                                                                                return 0;
-                                                                            } else {
-                                                                                if (pass1.length() == 0) {
-                                                                                    System.out.println("Type a password please");
+                                                                        Statement usrcheck = newConnect.createStatement();
+                                                                        String usrchkQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
+                                                                        ResultSet testingSet = usrcheck.executeQuery(usrchkQuery);
+                                                                        boolean unique = true;
+                                                                        if (userID.length() == 0 || userID.equals("NULL")) {
+                                                                            System.out.println("Type a UserID please");
+                                                                        } else if (testingSet.isBeforeFirst()){
+                                                                            System.out.println("Choose a unique UserID pls");
+                                                                        } else {
+                                                                            while (true) {
+                                                                                System.out.println("ENTER PASSWORD: ");
+                                                                                pass1 = editor.nextLine();
+                                                                                if (pass1.equalsIgnoreCase("exit")) {
+                                                                                    System.out.println("You exited the editor at Password. Good-bye.");
+                                                                                    return 0;
                                                                                 } else {
-                                                                                    while (true) {
-                                                                                        System.out.println("RE-ENTER PASSWORD: ");
-                                                                                        pass2 = editor.nextLine();
-                                                                                        if (pass2.equalsIgnoreCase("exit")) {
-                                                                                            System.out.println("You exited the editor at Password. Good-bye.");
-                                                                                            return 0;
-                                                                                        } else {
-                                                                                            if (pass2.length() == 0) {
-                                                                                                System.out.println("Type a Password please");
-                                                                                            } else if (!pass1.equals(pass2)) {
-                                                                                                System.out.print("Make sure the passwords match");
+                                                                                    if (pass1.length() == 0 || pass1.equals("NULL")) {
+                                                                                        System.out.println("Type a password please");
+                                                                                    } else {
+                                                                                        while (true) {
+                                                                                            System.out.println("RE-ENTER PASSWORD: ");
+                                                                                            pass2 = editor.nextLine();
+                                                                                            if (pass2.equalsIgnoreCase("exit")) {
+                                                                                                System.out.println("You exited the editor at Password. Good-bye.");
+                                                                                                return 0;
                                                                                             } else {
-                                                                                                System.out.println("");
-                                                                                                Statement rgstrcheck = newConnect.createStatement();
-                                                                                                String passQuery = "UPDATE User SET ID = '" + userID + "', first_name = '" + firstName + "', minit = '" + mi + "', last_name = '" + lastName + "', password = '" + pass1 + "', passenger_email = '" + email + "' WHERE ID='" + ID + "'"; // YOU HAVE TO CHANGE WHERE IT'S ID.
-                                                                                                //String passQuery = "INSERT INTO User VALUES ('" + userID + "', '" + firstName + "', '" + mi + "', '" + lastName + "', '" + pass1 + "', '" + email + "')";
-                                                                                                ResultSet rgstrSet = rgstrcheck.executeQuery(passQuery);
-                                                                                                String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
-                                                                                                ResultSet testSet = rgstrcheck.executeQuery(testQuery);
-                                                                                                if (!testSet.isBeforeFirst()) { // if the set is empty, then it means
-                                                                                                    System.out.println("information edit failed.");
-                                                                                                    System.out.println("-------- RETURNING TO LOGIN SCREEN, EDIT FAILED ---------");
-                                                                                                    return -1;
+                                                                                                if (!pass1.equals(pass2)) {
+                                                                                                    System.out.print("Make sure the passwords match");
                                                                                                 } else {
-                                                                                                    System.out.println("Congrats, your account has been edited. We'll need to return you to the login screen.");
-                                                                                                    return -1;               
+
+                                                                                                    mi = mi.equals("NULL") ? mi : "'" + mi + "'";
+
+                                                                                                    System.out.println("");
+                                                                                                    Statement rgstrcheck = newConnect.createStatement();
+                                                                                                    String passQuery = "UPDATE User SET ID = '" + userID + "', first_name = '" + firstName + "', minit = " + mi + ", last_name = '" + lastName + "', password = '" + pass1 + "', passenger_email = '" + email + "' WHERE ID='" + ID + "'"; // YOU HAVE TO CHANGE WHERE IT'S ID.
+                                                                                                    //String passQuery = "INSERT INTO User VALUES ('" + userID + "', '" + firstName + "', '" + mi + "', '" + lastName + "', '" + pass1 + "', '" + email + "')";
+                                                                                                    ResultSet rgstrSet = rgstrcheck.executeQuery(passQuery);
+                                                                                                    String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
+                                                                                                    ResultSet testSet = rgstrcheck.executeQuery(testQuery);
+                                                                                                    if (!testSet.isBeforeFirst()) { // if the set is empty, then it means
+                                                                                                        System.out.println("information edit failed.");
+                                                                                                        System.out.println("-------- RETURNING TO LOGIN SCREEN, EDIT FAILED ---------");
+                                                                                                        return -1;
+                                                                                                    } else {
+                                                                                                        System.out.println("Congrats, your account has been edited. We'll need to return you to the login screen.");
+                                                                                                        return -1;
+                                                                                                    }
                                                                                                 }
                                                                                             }
                                                                                         }
@@ -777,7 +787,7 @@ public class GUI {
                     return -1;
                 } else {
                     System.out.println("Delete failed");
-                    System.out.println("-------- RETURNING TO MAIN GUI, DELETE DIDN'T WORK ---------");                                        
+                    System.out.println("-------- RETURNING TO MAIN GUI, DELETE DIDN'T WORK ---------");
                     return 1;
                 }
             } else if (choiceEditString == 3) {
@@ -1192,8 +1202,9 @@ public class GUI {
                 System.out.println();
                 while (reviewNum.next()) {
                     numOfQueries = Integer.parseInt(reviewNum.getString("COUNT(rid)"));
+                    System.out.println("NUMBER OF REVIEWS: " + numOfQueries);
                 }
-                displayArr = new String[numOfQueries][6];
+                displayArr = new String[numOfQueries + 1][6];
                 displayArr[0][0] = "RID"; // fill in the top part of the multi dim array with the categories.
                 displayArr[0][1] = "          STATION";
                 displayArr[0][2] = "          SHOPPING_NUM";
@@ -1204,13 +1215,13 @@ public class GUI {
                 int colInt = 1;
                 System.out.println("ARRAY BEING FILLED IN.");
                 while (reviewInfo.next()) {
-                    if (rowInt == numOfQueries) {break;}
+                    if (rowInt > numOfQueries) {break;}
                     while(colInt <= 6) {
-                        displayArr[rowInt][colInt - 1] = colInt == 1 ? reviewInfo.getString(colInt) : "                   " + reviewInfo.getString(colInt);                    
-                        colInt++;   
+                        displayArr[rowInt][colInt - 1] = colInt == 1 ? reviewInfo.getString(colInt) : "                   " + reviewInfo.getString(colInt);
+                        colInt++;
                     }
                     rowInt++;
-                    colInt = 1;                    
+                    colInt = 1;
                 }
 
                 System.out.println(Arrays.deepToString(displayArr).replace("], ", "]\n\n"));
@@ -1239,7 +1250,7 @@ public class GUI {
                 System.out.println();
                 System.out.println();
                 System.out.print("ENTER YOUR CHOICE NOW: ");
-                
+
 
                 String whatChoice = getReviewData.nextLine(); // get the result of what they want.
                 if (whatChoice.length() < 2) {
@@ -1254,14 +1265,21 @@ public class GUI {
                         int secondArrIndex = checkInt % 10;
                         int firstArrIndex = checkInt / 10;
                         System.out.println("This is the result of the index picked: " + displayArr[firstArrIndex][secondArrIndex]);
-                        if (secondArrIndex == 1) {
+                        if (secondArrIndex == 1) { 
                             stationDisplay(displayArr[firstArrIndex][secondArrIndex], gatherData); // the station and line displays.
-                        } else {
-                            System.exit(1); // for the review.
+                        } else {                                            
+                            System.out.println("EXITING.");
+                            System.exit(1); // if done correctly, this will allow us to pick either a review to edit or a station to look at.
+                            
+                            //System.out.println("This is the result of the index picked: " + displayArr[firstArrIndex][secondArrIndex]);
+
+                            int editingSuccess = editReview(displayArr[firstArrIndex][secondArrIndex]);
+
+                            System.out.println("EDITED REVIEW");
                         }
-                        
-                        System.out.println("EXITING.");
-                        System.exit(1); // if done correctly, this will allow us to pick either a review to edit or a station to look at.
+
+                        //System.out.println("EXITING.");
+                        //System.exit(1); // if done correctly, this will allow us to pick either a review to edit or a station to look at.
                     }
                 } else {
                     String[] breakArr = whatChoice.split(" "); // assume we have a non-numeric string. We have to figure out how to actually order by.
@@ -1274,10 +1292,125 @@ public class GUI {
                         System.out.println("THIS IS THE SENDOUT: " + sendOut);
                         return viewReviews(idToUse, gatherData, sendOut); // this completes the thing. It's fucking recursive.
                     }
-                    
-                }                                                                               
+
+                }
             }
-        }        
+        }
+    }
+
+    public static int editReview(String rid) throws Exception {
+        Connection newConnect = getConnection();
+        Scanner editor = new Scanner(System.in);
+
+        Statement theReview = newConnect.createStatement();
+
+
+
+        String getReviewQuery = "SELECT shopping, connection_speed, comment, approval_status, station_name  FROM Review WHERE passenger_ID='" + userID + "' AND rid='" + rid + "'";
+
+        ResultSet getReview = theReview.executeQuery(getReviewQuery);
+
+        String shoppingRate = "";
+
+        getReview.next();
+
+        for (int i = 0; i < Integer.parseInt(getReview.getString("shopping")); i++) {
+            shoppingRate = shoppingRate + "* ";
+        }
+
+        String connectionRate = "";
+
+        for (int i = 0; i < Integer.parseInt(getReview.getString("connection_speed")); i++) {
+            connectionRate = connectionRate + "* ";
+        }
+
+        System.out.println("REVIEW FOR: " + getReview.getString("station_name"));
+        System.out.println("APPROVAL STATUS: " + getReview.getString("approval_status"));
+        System.out.println("REVIEW ID: " + rid);
+        System.out.println("SHOPPING RATING: " + shoppingRate);
+        System.out.println("CONNECTION RATING: " + connectionRate);
+        System.out.println("COMMENT: " + getReview.getString("comment"));
+        System.out.println();
+
+        while (true) {
+            System.out.println("CHOOSE 1 TO EDIT REVIEW");
+            System.out.println("CHOOSE 2 TO DELETE REVIEW");
+            System.out.println("CHOOSE 3 TO RETURN TO VIEW REVIEWS");
+            System.out.print("ENTER CHOICE: ");
+
+            Scanner chooseOption = new Scanner(System.in);
+            int choiceEditString = chooseOption.nextInt();
+
+            if (choiceEditString == 1) {
+                int shoppingRating;
+                int connectionRating;
+                String commentLeft;
+
+                shoppingRating = -1; // assume we did get valid index, set shopping and connection ratings.
+                 connectionRating = -1;
+                 while(true) { // these smaller and smaller infinite loops restrict our errors, so making one error forces us to solve that
+                     // one error before moving on, input-wise.
+                     System.out.print("CHOOSE A SHOPPING RATING FROM 0 TO 5: ");
+                     shoppingRating = chooseOption.nextInt();
+                     if (shoppingRating < 0 || shoppingRating > 5) {
+                         System.out.println("Choose a valid rating."); // valid check on shopping rating.
+                         System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.
+                     } else {
+                         while(true) {
+                             System.out.print("CHOOSE A CONNECTION RATING FROM 0 TO 5: "); // valid check on
+                             connectionRating = chooseOption.nextInt();
+                             if (connectionRating < 0 || connectionRating > 5) {
+                                 System.out.println("Choose a valid number");
+                                 System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.
+                             } else {
+                                 System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user. // throwing identification everywhere so jackson doesn't get mad.
+                                 Scanner captureReview = new Scanner(System.in);
+                                 System.out.print("LEAVE A COMMENT ABOUT THE STATION (OPTIONAL): ");
+                                 commentLeft = captureReview.nextLine();
+                                 if (commentLeft.length() == 0 || commentLeft.equals("NULL")) {
+                                     commentLeft = "NULL";
+                                 }
+                                 String passQuery = "UPDATE Review SET shopping='" + shoppingRating + "', connection_speed='" + connectionRating + "', comment='" + commentLeft + "' WHERE passenger_ID='" + userID + "' AND rid='" + rid + "'";
+                                 //String passQuery = "INSERT INTO Review VALUES ('" + userID + "', " + count + ", " + shoppingRating + ", " + connectionRating +", '" + commentLeft +  "', NULL, 'pending', NULL, '" + arrStations[getInt] + "')";
+                                 ResultSet rgstrSet = theReview.executeQuery(passQuery);
+                                 System.out.println("You updated a review.");
+                                 return 0;
+                                 // TODO: OBTAIN THE NEW RID BY GETTING ALL REVIEWS BY A PARTICULAR USER AND GETTING THE MAX
+                                 // NUMBER OF THOSE RIDS, ADD 1 TO GET THE NEW RID - IT'S A NEW REVIEW.
+                                 // TODO: WRITE THE QUERY TO ADD EVERYTHING AS A REVIEW TUPLE.
+                                 // TODO: TEST AND SEE IF THIS WORKS
+                                 // edit timestamp should be null
+                             }
+                         }
+                     }
+                 }
+                // System.out.println("HITTING LINE OUTSIDE BIG BLOCK, DONE WHEN EXIT TYPED IN USERNAME CHECK");
+                // return 0; // this should never hit.
+            } else if (choiceEditString == 2) {
+                Statement editcheck = newConnect.createStatement();
+                String passQuery = "DELETE FROM Review WHERE passenger_ID='" + userID + "' AND rid='" + rid + "'";
+                ResultSet editset = editcheck.executeQuery(passQuery);
+
+                String testQuery = "SELECT * FROM Review WHERE passenger_ID='" + userID + "' AND rid='" + rid + "'";
+                ResultSet testSet = editcheck.executeQuery(testQuery);
+
+                if (!(testSet.isBeforeFirst())) {
+                    System.out.println("Congrats you deleted your review!");
+                    System.out.println("------- RETURNING TO VIEW REVIEWS ------- ");
+                    return 0;
+                } else {
+                    System.out.println("Delete failed");
+                    System.out.println("-------- RETURNING TO MAIN GUI, DELETE DIDN'T WORK ---------");
+                    return 1;
+                }
+            } else if (choiceEditString == 3) {
+                System.out.println("You exited while editing review. Goodbye");
+                return 0;
+            } else {
+                System.out.println("You entered an incorrect number. Try again. Or quit.");
+                System.out.println("");
+            }
+        }
     }
 
     public static boolean checkIfNumeric(String checkString) {
@@ -1406,7 +1539,6 @@ public class GUI {
 
 
                 System.out.println(Arrays.deepToString(reviewArr).replace("], ", "]\n\n"));                                  
-
                 System.out.printf("%n%n%n");
 
                 int lengthOfList = LinesList.size();
@@ -1426,10 +1558,11 @@ public class GUI {
                 }
                 
             }
-            
+
         }
-        
     }
+            
+
     
     public static int lineDisplay(String line, Connection newConnect, String addition) throws Exception {
         int numOfStops = -1; // set the numOfStops impossible
@@ -1470,7 +1603,6 @@ public class GUI {
                 rowInt++;
                 colInt = 1;                    
             }
-
             System.out.println(Arrays.deepToString(displayArr).replace("], ", "]\n\n"));
 
 
@@ -1505,8 +1637,6 @@ public class GUI {
             int countOfReviews = -1;
             String[][] displayArr;
             Scanner reviewAdminScan = new Scanner(System.in); // create the scanner.
-
-
             System.out.println("-------ENTERING REVIEW AREA AS ADMIN ---------");
             System.out.printf("%n%n");
             
@@ -1594,4 +1724,556 @@ public class GUI {
             
         }        
     }
+
+    public static int editAdmin(String ID) throws Exception {
+        Connection newConnect = getConnection();
+        Scanner editor = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("CHOOSE 1 TO UPDATE ACCOUNT");
+            System.out.println("CHOOSE 2 TO DELETE ACCOUNT");
+            System.out.println("CHOOSE 3 TO QUIT TO MAIN GUI");
+            System.out.print("ENTER CHOICE: ");
+
+            Scanner ChoiceEditType = new Scanner(System.in);
+            int choiceEditString = ChoiceEditType.nextInt();
+
+            if (choiceEditString == 1) {
+                String firstName;
+                String mi;
+                String lastName;
+                String email;
+                String userID;
+                String pass1;
+                String pass2;
+
+                while(true) {
+                    System.out.print("ENTER FIRST NAME: ");
+                    firstName = editor.nextLine();
+                    if (firstName.equalsIgnoreCase("exit")) {
+                        System.out.println("You exited the editor at FirstName. Good-bye.");
+                        return 0; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
+                    } else {
+                        if (firstName.length() == 0 || firstName.equals("NULL")) {
+                            System.out.println("Type a first name please");
+                        } else {
+                            while (true) {
+                                System.out.println("ENTER MIDDLE INITIAL: ");
+                                String middleI = editor.nextLine();
+                                mi = middleI.length() == 0 ? "NULL" : middleI;
+                                if (mi.equalsIgnoreCase("exit")) {
+                                    System.out.println("You exited the editor at Middle Initial. Good-bye.");
+                                    return 0; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
+                                } else {
+                                    if (mi.length() > 1 && !mi.equals("NULL")) {
+                                        System.out.println("Middle initial should be one character.");
+                                    } else {
+                                        while (true) {
+                                            System.out.println("ENTER LAST NAME: ");
+                                            lastName = editor.nextLine();
+                                            if (lastName.equalsIgnoreCase("exit")) {
+                                                System.out.println("You exited the editor at LastName. Good-bye.");
+                                                return 0;
+                                            } else {
+                                                if (lastName.length() == 0 || lastName.equals("NULL")) {
+                                                    System.out.println("Type a last name please");
+                                                } else {
+                                                    while (true) {
+                                                        System.out.println("ENTER USERID: ");
+                                                        userID = editor.nextLine();
+                                                        if (userID.equalsIgnoreCase("exit")) {
+                                                            System.out.println("You exited the editor at UserID. Good-bye.");
+                                                            return 0;
+                                                        } else {
+                                                            Statement usrcheck = newConnect.createStatement();
+                                                            String usrchkQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
+                                                            ResultSet testingSet = usrcheck.executeQuery(usrchkQuery);
+                                                            boolean unique = true;
+                                                            if (userID.length() == 0 || userID.equals("NULL")) {
+                                                                System.out.println("Type a UserID please");
+                                                            } else if (testingSet.isBeforeFirst()){
+                                                                System.out.println("Choose a unique UserID pls");
+                                                            } else {
+                                                                while (true) {
+                                                                    System.out.println("ENTER PASSWORD: ");
+                                                                    pass1 = editor.nextLine();
+                                                                    if (pass1.equalsIgnoreCase("exit")) {
+                                                                        System.out.println("You exited the editor at Password. Good-bye.");
+                                                                        return 0;
+                                                                    } else {
+                                                                        if (pass1.length() == 0 || pass1.equals("NULL")) {
+                                                                            System.out.println("Type a password please");
+                                                                        } else {
+                                                                            while (true) {
+                                                                                System.out.println("RE-ENTER PASSWORD: ");
+                                                                                pass2 = editor.nextLine();
+                                                                                if (pass2.equalsIgnoreCase("exit")) {
+                                                                                    System.out.println("You exited the editor at Password. Good-bye.");
+                                                                                    return 0;
+                                                                                } else {
+                                                                                    if (!pass1.equals(pass2)) {
+                                                                                        System.out.print("Make sure the passwords match");
+                                                                                    } else {
+
+                                                                                        mi = mi.equals("NULL") ? mi : "'" + mi + "'";
+
+                                                                                        System.out.println("");
+                                                                                        Statement rgstrcheck = newConnect.createStatement();
+                                                                                        String passQuery = "UPDATE User SET ID = '" + userID + "', first_name = '" + firstName + "', minit = " + mi + ", last_name = '" + lastName + "', password = '" + pass1 + "' WHERE ID='" + ID + "'"; // YOU HAVE TO CHANGE WHERE IT'S ID.
+                                                                                        //String passQuery = "INSERT INTO User VALUES ('" + userID + "', '" + firstName + "', '" + mi + "', '" + lastName + "', '" + pass1 + "', '" + email + "')";
+                                                                                        ResultSet rgstrSet = rgstrcheck.executeQuery(passQuery);
+                                                                                        String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
+                                                                                        ResultSet testSet = rgstrcheck.executeQuery(testQuery);
+                                                                                        if (!testSet.isBeforeFirst()) { // if the set is empty, then it means
+                                                                                            System.out.println("information edit failed.");
+                                                                                            System.out.println("-------- RETURNING TO LOGIN SCREEN, EDIT FAILED ---------");
+                                                                                            return -1;
+                                                                                        } else {
+                                                                                            System.out.println("Congrats, your account has been edited. We'll need to return you to the login screen.");
+                                                                                            return -1;
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+
+
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                // System.out.println("HITTING LINE OUTSIDE BIG BLOCK, DONE WHEN EXIT TYPED IN USERNAME CHECK");
+                // return 0; // this should never hit.
+            } else if (choiceEditString == 2) {
+                Statement editcheck = newConnect.createStatement();
+                String passQuery = "DELETE FROM User WHERE ID='" + ID + "'";
+                ResultSet editset = editcheck.executeQuery(passQuery);
+
+                String testQuery = "SELECT * FROM User WHERE ID='" + ID + "'";
+                ResultSet testSet = editcheck.executeQuery(testQuery);
+
+                if (!(testSet.isBeforeFirst())) {
+                    System.out.println("Congrats you deleted your account!");
+                    System.out.println("------- RETURNING TO WELCOME SCREEN ------- ");
+                    return -1;
+                } else {
+                    System.out.println("Delete failed");
+                    System.out.println("-------- RETURNING TO MAIN GUI, DELETE DIDN'T WORK ---------");
+                    return 1;
+                }
+            } else if (choiceEditString == 3) {
+                System.out.println("You exited while editing user info. Goodbye");
+                return 0;
+            } else {
+                System.out.println("You entered an incorrect number. Try again. Or quit.");
+                System.out.println("");
+            }
+        }
+    }
+
+    public static int addStation() throws Exception {
+        Connection newConnect = getConnection();
+        Scanner registration = new Scanner(System.in);
+
+        Statement getAllLines = newConnect.createStatement();
+
+        String getLineQueryNum = "SELECT COUNT(name) FROM Line"; // get the count of lines
+        ResultSet getNumLines = getAllLines.executeQuery(getLineQueryNum); // get the count of stations.
+        int lineCount = -5; // set random num
+        while(getNumLines.next()) {
+            lineCount = Integer.parseInt(getNumLines.getString("COUNT(name)")); // getNum = count of stations.
+        }
+
+        String name;
+        String stateProvince;
+        String address;
+        int zipcode;
+        String city;
+        String status;
+        String[] line = new String[lineCount];
+        int count = 0;
+        String[] orderNum = new String[lineCount];
+
+        while(true) {
+            System.out.print("ENTER STATION NAME: ");
+            name = registration.nextLine();
+            if (name.equalsIgnoreCase("exit")) {
+                System.out.println("You exited the registration at FirstName. Good-bye.");
+                return 0; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
+            } else {
+
+                Statement namecheck = newConnect.createStatement();
+                String testNameQuery = "SELECT * FROM Station WHERE name='" + name + "'";
+                ResultSet testNameSet = namecheck.executeQuery(testNameQuery);
+                boolean uniqueName = true;
+
+                if (name.length() == 0 || name.equals("NULL")) {
+                    System.out.println("Type a station name please");
+                } else if (testNameSet.isBeforeFirst()){
+                    System.out.println("Choose a unique station name pls");
+                } else {
+                    while (true) {
+                        System.out.println("ENTER STATE/PROVINCE: ");
+                        stateProvince = registration.nextLine();
+                        if (stateProvince.equalsIgnoreCase("exit")) {
+                            System.out.println("You exited the registration at Middle Initial. Good-bye.");
+                            return 0; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
+                        } else {
+                            if (stateProvince.length() == 0 || stateProvince.equals("NULL")) {
+                                System.out.println("Type a state/province please");
+                            } else {
+                                while (true) {
+                                    System.out.println("ENTER ADDRESS: ");
+                                    address = registration.nextLine();
+                                    if (address.equalsIgnoreCase("exit")) {
+                                        System.out.println("You exited the registration at address. Good-bye.");
+                                        return 0;
+                                    } else {
+                                        if (address.length() == 0 || address.equals("NULL")) {
+                                            System.out.println("Type a last name please");
+                                        } else {
+                                            while (true) {
+                                                System.out.println("ENTER ZIPCODE OR -1 TO EXIT: ");
+
+                                                Scanner zip = new Scanner(System.in);
+
+                                                zipcode = zip.nextInt();
+                                                if (zipcode == -1) {
+                                                    System.out.println("You exited the registration at zipcode. Good-bye.");
+                                                    return 0;
+                                                } else {
+                                                    if (zipcode > 0) {
+                                                        while (true) {
+                                                            System.out.println("ENTER CITY: ");
+                                                            city = registration.nextLine();
+                                                            if (city.equalsIgnoreCase("exit")) {
+                                                                System.out.println("You exited the registration at city. Good-bye.");
+                                                                return 0;
+                                                            } else {
+                                                                Statement locationcheck = newConnect.createStatement();
+                                                                String testLocationQuery = "SELECT * FROM Station WHERE state_province='" + stateProvince + "' AND address='" + address + "' AND zipcode='" + zipcode + "' AND city='" + city + "'";
+                                                                ResultSet testLocationSet = locationcheck.executeQuery(testLocationQuery);
+                                                                boolean uniqueLocation = true;
+                                                                if (city.length() == 0 || city.equals("NULL")) {
+                                                                    System.out.println("Type a city please");
+                                                                } else if (testLocationSet.isBeforeFirst()) {
+                                                                    System.out.println("Choose a unique combination of state/province, address, zipcode, and city");
+                                                                    break;
+                                                                } else {
+
+                                                                    while (true) {
+
+                                                                        Scanner statusChoice = new Scanner(System.in);
+
+                                                                        System.out.println("CHOOSE STATUS : ");
+                                                                        System.out.println("(1): Open");
+                                                                        System.out.println("(2): Closed");
+                                                                        System.out.println("(3): Half-Capacity");
+                                                                        System.out.println("(0): Quit");
+
+                                                                        int theStatus = statusChoice.nextInt();
+                                                                        //status = registration.nextLine();
+                                                                        if (theStatus == 0) {
+                                                                            System.out.println("You exited the registration at status. Good-bye.");
+                                                                            return 0;
+                                                                        } else {
+                                                                            if (theStatus < 0 || theStatus > 3) {
+                                                                                System.out.println("Type a valid status please");
+                                                                            } else {
+                                                                                status = theStatus == 1 ? "open" : theStatus == 2 ? "closed" : "half=capacity";
+                                                                                while (true) {
+
+                                                                                    Statement getAllLineNames = newConnect.createStatement();
+
+                                                                                    String getLineNamesQuery = "SELECT name FROM Line ORDER BY name"; // order by name, assume we only have to get from stations.
+                                                                                    ResultSet getLineNames = getAllLineNames.executeQuery(getLineNamesQuery); // get the stations.
+
+                                                                                    String[] arrLineNames = new String[lineCount];
+                                                                                    int fillIndex = 0;
+                                                                                    while (getLineNames.next()) {
+                                                                                                arrLineNames[fillIndex] = getLineNames.getString("name"); // get the value out of the column "name"
+                                                                                                fillIndex++;
+                                                                                            }
+                                                                                    System.out.println("ARRAY FOR LINES: " + Arrays.toString(arrLineNames));
+
+                                                                                    System.out.println("ENTER LINE NAME: ");
+                                                                                    line[count] = registration.nextLine();
+                                                                                    boolean isInLines = false;
+                                                                                    for (int i = 0; i < fillIndex; i++) {
+                                                                                        if (line[count].equals(arrLineNames[i])) {
+                                                                                            isInLines = true;
+                                                                                        }
+                                                                                    }
+
+                                                                                    if (line[count].equalsIgnoreCase("exit")) {
+                                                                                        System.out.println("You exited the registration at line. Good-bye.");
+                                                                                        return 0;
+                                                                                    } else {
+                                                                                        if (line[count].length() == 0 || line[count].equals("NULL") || !isInLines) {
+                                                                                            System.out.println("Type a line please");
+                                                                                        } else {
+                                                                                            while (true) {
+                                                                                                System.out.println("ENTER ORDER NUMBER OR -1 TO GO BACK TO LINE: ");
+                                                                                                orderNum[count] = registration.nextLine();
+                                                                                                if (orderNum[count].equalsIgnoreCase("exit")) {
+                                                                                                    System.out.println("You exited the registration at order number. Good-bye.");
+                                                                                                    return 0;
+                                                                                                } else if (orderNum[count].equals("-1")) {
+                                                                                                    break;
+                                                                                                } else {
+
+                                                                                                    Statement lineOrderCheck = newConnect.createStatement();
+                                                                                                    String lineOrderQuery = "SELECT * FROM Station_On_Line WHERE line_name='" + line + "' AND order_number='" + orderNum[count] + "'";
+                                                                                                    ResultSet lineOrderSet = lineOrderCheck.executeQuery(lineOrderQuery);
+                                                                                                    boolean uniqueLineOrder = true;
+
+                                                                                                    if (orderNum[count].length() == 0 || orderNum[count].equals("NULL")) {
+                                                                                                        System.out.println("Type an order number please");
+                                                                                                    } else if (lineOrderSet.isBeforeFirst()) {
+                                                                                                        System.out.println("Choose a unique order number for the line please");
+
+                                                                                                    } else {
+                                                                                                        count++;
+                                                                                                        while (true) {
+                                                                                                            System.out.println("ADD STATION TO ANOTHER LINE?");
+                                                                                                            System.out.println("(1): YES");
+                                                                                                            System.out.println("(2): NO");
+
+                                                                                                            Scanner stationAdder = new Scanner(System.in);
+                                                                                                            int userSelection = stationAdder.nextInt();
+
+                                                                                                            if (userSelection == 1) {
+                                                                                                                break;
+                                                                                                            } else if (userSelection == 2) {
+
+                                                                                                                System.out.println("");
+
+                                                                                                                Statement rgstrcheck = newConnect.createStatement();
+
+
+
+
+                                                                                                                String passQuery = "INSERT INTO Station VALUES ('" + name + "', '" + status + "', '" + stateProvince + "', '" + address + "', '" + zipcode + "', '" + city + "')";
+                                                                                                                ResultSet rgstrSet = rgstrcheck.executeQuery(passQuery);
+                                                                                                                String adminAddQuery = "INSERT INTO Admin_Add_Station VALUES ('" + name + "', '" + userID + "', sysdate())";
+                                                                                                                ResultSet adminAddSet = rgstrcheck.executeQuery(adminAddQuery);
+
+                                                                                                                for (int j = 0; j < count; j++) {
+                                                                                                                    String lineAddQuery = "INSERT INTO Station_On_Line VALUES ('" + name + "', '" + line[j] + "', '" + orderNum[j] + "')";
+                                                                                                                    ResultSet lineAddSet = rgstrcheck.executeQuery(lineAddQuery);
+                                                                                                                }
+
+                                                                                                                // String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
+                                                                                                                // ResultSet testSet = rgstrcheck.executeQuery(testQuery);
+
+                                                                                                                // if (!(testSet.isBeforeFirst())) {
+                                                                                                                //     System.out.println("username is not unique. try again.");
+                                                                                                                //     System.out.println("-------- RETURNING TO LOGIN SCREEN, PASSWORD DOESN'T MATCH WITH GIVEN USERNAME ---------");
+                                                                                                                // } else {
+                                                                                                                    System.out.println("Congrats, you've added a station.");
+                                                                                                                    return 0; // break completely;
+                                                                                                                // }
+
+                                                                                                            } else {
+                                                                                                                System.out.println("Enter a valid number");
+                                                                                                            }
+                                                                                                        }
+
+                                                                                                        System.out.println("");
+
+                                                                                                        Statement rgstrcheck = newConnect.createStatement();
+                                                                                                        String passQuery = "INSERT INTO Station VALUES ('" + name + "', '" + status + "', " + stateProvince + ", '" + address + "', '" + zipcode + "', '" + city + "')";
+                                                                                                        ResultSet rgstrSet = rgstrcheck.executeQuery(passQuery);
+                                                                                                        String adminAddQuery = "INSERT INTO Admin_Add_Station VALUES ('" + name + "', " + userID + "', sysdate())";
+                                                                                                        ResultSet amdinAddSet = rgstrcheck.executeQuery(adminAddQuery);
+
+                                                                                                        // String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
+                                                                                                        // ResultSet testSet = rgstrcheck.executeQuery(testQuery);
+
+                                                                                                        // if (!(testSet.isBeforeFirst())) {
+                                                                                                        //     System.out.println("username is not unique. try again.");
+                                                                                                        //     System.out.println("-------- RETURNING TO LOGIN SCREEN, PASSWORD DOESN'T MATCH WITH GIVEN USERNAME ---------");
+                                                                                                        // } else {
+                                                                                                            System.out.println("Congrats, you've added a station.");
+                                                                                                            return 0; // break completely;
+                                                                                                        // }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+
+
+
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+
+                                                    } else {
+                                                       System.out.println("Type a zipcode please");
+                                                    }
+                                                }
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static int addLine() throws Exception {
+        Connection newConnect = getConnection();
+        Scanner registration = new Scanner(System.in);
+
+        Statement getAllStations = newConnect.createStatement();
+
+        String getStationQueryNum = "SELECT COUNT(name) FROM Station"; // get the count of Stations
+        ResultSet getNumStations = getAllStations.executeQuery(getStationQueryNum); // get the count of stations.
+        int stationCount = -5; // set random num
+        while(getNumStations.next()) {
+            stationCount = Integer.parseInt(getNumStations.getString("COUNT(name)")); // getNum = count of stations.
+        }
+
+        String name;
+        String station[] = new String[stationCount];
+        int count = 0;
+
+        while (true) {
+            System.out.println("CHOOSE NAME FOR NEW LINE: ");
+            name = registration.nextLine();
+            if (name.equalsIgnoreCase("exit")) {
+                System.out.println("You exited the editor at Line Name. Good-bye.");
+                return 0; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
+            } else {
+                if (name.length() == 0 || name.equals("NULL")) {
+                    System.out.println("Type a line name please");
+                } else {
+                    while (true) {
+
+
+                        String getStationNamesQuery = "SELECT name FROM Station ORDER BY name"; // order by name, assume we only have to get from stations.
+                        ResultSet getStationNames = getAllStations.executeQuery(getStationNamesQuery); // get the stations.
+
+                        String[] arrStationNames = new String[stationCount];
+                        int[] arrStationNumbers = new int[stationCount];
+                        int fillIndex = 0;
+                        while (getStationNames.next()) {
+                                    arrStationNames[fillIndex] = getStationNames.getString("name"); // get the value out of the column "name"
+                                    //arrStationNumbers[fillIndex] = "Not On Line";
+                                    fillIndex++;
+                                }
+                        //System.out.println("ARRAY FOR LINES: " + Arrays.toString(arrStationNames));
+                        System.out.println("ALL STATIONS AND ORDER ON LINE: ");
+                        String stationOrderNum = arrStationNumbers[count] == 0 ? "Not On Line" : String.valueOf(arrStationNumbers[count]);
+                        for (int i = 0; i < fillIndex; i++) {
+                            System.out.println(arrStationNames[i] + " [ " + stationOrderNum + " ]");
+                        }
+
+                        System.out.println();
+                        System.out.println("ENTER *NAME OF* STATION YOU WOULD LIKE TO ADD TO LINE: " + name);
+                        station[count] = registration.nextLine();
+                        if (station[count].equalsIgnoreCase("exit")) {
+                            System.out.println("You exited the editor at Add Station. Good-bye");
+                            return 0;
+                        } else {
+                            boolean isInStations = false;
+                            for (int i = 0; i < count; i++) {
+                                if (station[count].equals(station[i]))
+                                    isInStations = true;
+                            }
+
+                            if (name.length() == 0 || name.equals("NULL") || isInStations) {
+                                System.out.println("Type a valid Station Name please");
+                            } else {
+
+
+
+                                while (true) {
+                                    System.out.println("ENTER ORDER NUMBER FOR " + station[count] + " OR 0 TO EXIT");
+                                    Scanner chooseOrderNum = new Scanner(System.in);
+                                    arrStationNumbers[count] = chooseOrderNum.nextInt();
+                                    if (arrStationNumbers[count] == 0) {
+                                        System.out.println("You exited the editor at Order Number. Good-bye");
+                                        return 0;
+                                    } else {
+                                        boolean isInNums = false;
+                                        for(int i = 0; i < count; i++) {
+                                            if (arrStationNumbers[count] == arrStationNumbers[i]) {
+                                                isInNums = true;
+                                            }
+                                        }
+
+                                        if (arrStationNumbers[count] < 0) {
+                                            System.out.println("Enter a valid order number please");
+                                        } else {
+                                            count++;
+                                            while (true) {
+                                                System.out.println("ADD ANOTHER STATION TO LINE?");
+                                                System.out.println("(1): YES");
+                                                System.out.println("(2): NO");
+
+                                                int userSelection = chooseOrderNum.nextInt();
+
+                                                if (userSelection == 1) {
+                                                    break;
+                                                } else if (userSelection == 2) {
+
+                                                    System.out.println("");
+
+                                                    Statement rgstrcheck = newConnect.createStatement();
+
+
+
+
+                                                    String passQuery = "INSERT INTO Line VALUES ('" + name + "')";
+                                                    ResultSet rgstrSet = rgstrcheck.executeQuery(passQuery);
+                                                    String adminAddQuery = "INSERT INTO Admin_Add_Line VALUES ('" + name + "', '" + userID + "', sysdate())";
+                                                    ResultSet adminAddSet = rgstrcheck.executeQuery(adminAddQuery);
+
+                                                    for (int j = 0; j < count; j++) {
+                                                        String lineAddQuery = "INSERT INTO Station_On_Line VALUES ('" + station[j] + "', '" + name + "', '" + arrStationNumbers[j] + "')";
+                                                        ResultSet lineAddSet = rgstrcheck.executeQuery(lineAddQuery);
+                                                    }
+
+                                                    System.out.println("Congrats you added a line");
+                                                    return 0;
+
+                                                } else {
+                                                    System.out.println("Enter a valid number");
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+
+        }
+    }
+
 }

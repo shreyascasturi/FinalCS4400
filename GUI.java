@@ -144,9 +144,46 @@ public class GUI {
                                         }
                                     }
                                 } else {
-                                    System.out.println("admin motherfucker");
+                                    System.out.println("LOGGED IN AS ADMIN..."); // TIME TO DO THIS AS ADMIN FUCK YES
                                     isAdmin = true; // set the admin.
-                                    System.exit(1);
+                                    while(true) {                                     
+                                        int adminGUIresult = MainAdminGUI(); // check how this works
+                                        if (adminGUIresult == 1) { // VIEW TRIPS
+                                            //                                            int leaveReview = reviewPassengerReviewsADMIN(newConnect);
+                                            System.out.println(); 
+                                        } else if (adminGUIresult == 2) { // BUY CARD
+                                            int viewResults = viewReviews(userID, newConnect, "REGULAR");
+                                            System.out.println();
+                                        } else if (adminGUIresult == 3) { // GO ON TRIP
+                                            int cardSuccess = buyCard(userID); 
+                                            System.out.println();
+                                        } else if (adminGUIresult == 4) { // REVIEW PASSENGER REVIEWS
+                                            int tripCreatesuccess = reviewPassengerReviewsADMIN(newConnect);
+                                            System.out.println();  
+                                        } else if (adminGUIresult == 5) { // EDIT PROFILE
+                                            int viewTripSuccess = viewTrip(userID, "card_type");
+                                            System.out.println();
+                                        } else if (adminGUIresult == 6) { // ADD STATION
+                                            int editSuccess = editUser(userID);
+                                            if (editSuccess == -1) {
+                                                return 0; // get back to the welcoming screen.
+                                            }
+                                            System.out.println();
+                                        } else if (adminGUIresult == 7) { // ADD LINE
+                                            break; // this should break out of the inner loop about the password filling in and go straight to the login screen.
+                                        } else if (adminGUIresult == 8) { // GOTO LOGIN
+                                            break; // this takes us to the welcome screen.
+                                        } else if (adminGUIresult == 9) { // GOTO WELCOME
+                                            return 0; // this quits the app and gives us the quit screen.                                            
+                                        } else if (adminGUIresult == 10) { // GOTO FULL EXIT.
+                                            return -1;                                            
+                                        } else {
+                                            System.out.println("This should never be reached at all. This is in the passengerGui check in checkLogin.");
+                                            System.out.println("Crash app completely.");
+                                            System.exit(1); // this breaks the app with no quit screen other than "crash app completely."
+                                        }
+                                    }
+                                    break; // this is necessary to go back to the login screen. using only one break, as in the conditional for adminGui == 8, will go back to enter password.
                                 }
                             }
                         }
@@ -154,6 +191,73 @@ public class GUI {
                 }
             }
         }
+    }
+
+    public  static int MainAdminGUI() throws Exception {
+        Connection newConnect = getConnection();
+        Scanner chooseAdminGUI = new Scanner(System.in);
+        while(true) {
+            System.out.println("------------ MAIN PAGE ---------------------");
+            System.out.println();
+            System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.           
+            System.out.printf("CHOOSE A NUMBER TO EXPLORE DIFFERENT OPTIONS. %n 1. View Trips %n 2. Buy Card %n 3. Go On Trip %n 4. Review Passenger Reviews %n 5. Edit Profile %n"
+                              + " 6. Add Station %n 7. Add Line %n 8. Goto Login %n 9. Goto Welcome Screen %n 10. Quit Fully %n");
+            System.out.print("CHOOSE AN OPTION: ");
+            int chooseAdminInt = chooseAdminGUI.nextInt(); // same old, basically.
+            if (chooseAdminInt == 1) {
+                // leaveReview(newConnect);
+                // break; //return 0; // leave review
+                System.out.println("------------VIEW TRIPS------------"); // VIEW TRIPS
+                System.out.println("");
+                return 1;
+            } else if (chooseAdminInt == 2) {
+                System.out.println("------------BUY CARD------------");// VIEW REVIEWS
+                System.out.println("");
+                return 2;
+            } else if (chooseAdminInt == 3) {
+                System.out.println("------------GO ON TRIP------------"); // GO ON TRIP
+                System.out.println("");
+                return 3; //return 3(Go to card purchase screen);
+            } else if (chooseAdminInt == 4) { // REVIEW PASSENGER REVIEWS
+                System.out.println("------------REVIEW PASSENGER REVIEWS------------");
+                System.out.println("");
+                return 4; //return 4(Go to Go On Trip screen)
+            } else if (chooseAdminInt == 5) { // EDIT PROFILE
+                System.out.println("--------------EDIT PROFILE----------");
+                return 5;                
+            } else if (chooseAdminInt == 6) { // ADD STATION
+                System.out.println("------------ADD STATION------------");
+                System.out.println("");
+                return 6; //return 0;
+            } else if (chooseAdminInt == 7) { // ADD LINE
+                System.out.println("------------ADD LINE------------");
+                System.out.println("");
+                userID = ""; // reset as empty.
+                isAdmin = false; // reset as false even though it is false.
+                return 7;
+            } else if (chooseAdminInt == 8) { // goto LOGIN SCREEN
+                System.out.println("------------LOGGING OUT GOTO LOGIN------------");
+                System.out.println("");
+                userID = "";
+                isAdmin = false;
+                return 8;
+            } else if (chooseAdminInt == 9) { // GOTO WELCOME SCREEN
+                System.out.println("------------LOGGING OUT GOTO WELCOME SCREEN ------------");
+                System.out.println("");
+                userID = "";
+                isAdmin = false;
+                return 9;
+            } else if (chooseAdminInt == 10) { // GOTO QUIT FULLY
+                System.out.println("------------LOGGING OUT EXIT FULLY ------------");
+                System.out.println("");
+                userID = "";
+                isAdmin = false;
+                return 10;
+            } else {
+                System.out.println("You chose an incorrect number. Try again.");
+            }
+        }        
+        
     }
 
     public static int MainPassengerGUI() throws Exception { // after login on the user is done.
@@ -1333,8 +1437,10 @@ public class GUI {
         Connection lineConn = newConnect; // bring connection in
         Statement stateLine = newConnect.createStatement(); // create statement
         String[][] displayArr; // the array that'll be displayed.
+        String[] arrChoiceSort = new String[]{"station_name, order_number"};
         Scanner anotherScan = new Scanner(System.in);
         String queryToExec = null;
+        ArrayList<String> checkChoiceList = new ArrayList<>(Arrays.asList(arrChoiceSort));
 
         while(true) {
             if (addition.equals("REGULAR")) {
@@ -1371,17 +1477,119 @@ public class GUI {
             // be able to choose various things, such as the review and the station. Focus on this now.
             System.out.println();
 
-            System.out.printf("Type in EXIT to get out of this page and back to the previous page, or specify sorting by typing SORT <category> ASC/DESC, respectively: ");
+            System.out.printf("Type in EXIT to get out of this page and back to the previous page, or specify sorting by typing SORT <category> ASC/DESC, respectively. <category> = station_name || order_number. CHOOSE: ");
 
             String lineChoice = anotherScan.nextLine();
             if (lineChoice.equalsIgnoreCase("EXIT")) {
                 return 0;
             } else {
                 String[] choiceArr = lineChoice.split(" ");
-                String choiceMake = choiceArr[1] + " " + choiceArr[2];
-                return lineDisplay(line, newConnect, choiceMake);
+                if (choiceArr[0].equalsIgnoreCase("sort") && (checkChoiceList.contains(choiceArr[1])) && (choiceArr[2].equalsIgnoreCase("asc") || choiceArr[2].equalsIgnoreCase("desc"))) {
+                    String choiceMake = choiceArr[1] + " " + choiceArr[2]; // i'm not even going to check whether they typed the right thing
+                    return lineDisplay(line, newConnect, choiceMake); // make this recursive to sort.
+                } else {
+                    System.out.println("Pick correctly next time.");
+                }
+                
             }
             
         }                
+    }
+
+
+    public static int reviewPassengerReviewsADMIN(Connection newConnect) throws Exception {
+        Connection getStationReviews = newConnect; // label the conn.
+        Statement getReviewQuery = newConnect.createStatement(); // label the statement
+        int countOfReviews = -1;
+        String[][] displayArr;
+        Scanner reviewAdminScan = new Scanner(System.in); // create the scanner.
+
+        while(true) {
+
+            System.out.println("-------ENTERING REVIEW AREA AS ADMIN ---------");
+            System.out.printf("%n%n");
+            
+            String getReviews = "SELECT passenger_id, station_name, shopping, connection_speed, comment FROM Review WHERE approval_status='" + "pending" + "'"; // get the stuff for the array.
+            String getCountReviews = "SELECT COUNT(passenger_id) FROM Review WHERE approval_status='" + "pending" + "'"; // get the count for the array
+
+
+            ResultSet getReviewData = getReviewQuery.executeQuery(getReviews); // get the review data.
+            ResultSet getCountOfReviews = getReviewQuery.executeQuery(getCountReviews); // get the count of reviews.
+
+            while (getCountOfReviews.next()) {
+                countOfReviews = Integer.parseInt(getCountOfReviews.getString("COUNT(passenger_id)")); // get the int
+            }
+
+            displayArr = new String[countOfReviews + 1][5]; // initializing the array.
+            displayArr[0][0] = "PASSENGER_ID";
+            displayArr[0][1] = "STATION_NAME";
+            displayArr[0][2] = "SHOPPING";
+            displayArr[0][3] = "CONNECTION_SPEED";
+            displayArr[0][4] = "COMMENT";
+            int rowInt = 1;
+            int colInt = 1;
+
+            System.out.println("ARRAY BEING FILLED IN.");
+            while (getReviewData.next()) {
+                if (rowInt > countOfReviews) {break;}
+                while(colInt <= 5) {
+                    displayArr[rowInt][colInt - 1] =  getReviewData.getString(colInt);
+                    colInt++;   
+                }
+                rowInt++;
+                colInt = 1;                    
+            }
+
+            System.out.println(Arrays.deepToString(displayArr).replace("], ", "]\n\n"));
+
+            System.out.printf("%n%n%n%n%n");
+
+            System.out.println("YOU CAN CHOOSE A STATION USING <NUM REVIEW><1>. SO 11 is the index of the Station of the first review.");
+
+            System.out.println("");
+
+            System.out.println("ELSE, YOU CAN APPROVE OR DELETE REVIEWS, based on <a,r><NUM REVIEW>. To approve the first review, type in a1.");
+
+            System.out.println("");
+
+            System.out.println("OR, YOU CAN JUST TYPE IN EXIT TO QUIT AND BE TAKEN TO THE ADMIN GUI.");
+
+            System.out.println("");
+
+            System.out.print("MAKE A CHOICE: ");
+
+            String choiceMade = reviewAdminScan.nextLine();
+            if (choiceMade.equalsIgnoreCase("exit")) {
+                return 0;
+            } else if (checkIfNumeric(choiceMade)) { // this assumes they choose a review.
+                if (Integer.parseInt(choiceMade) <= 5 || Integer.parseInt(choiceMade) % 10 != 1) {
+                    System.out.println("You have picked an incorrect number for the station. pick again.");
+                }
+                
+            } else {
+                if (choiceMade.length() != 2) {
+                    System.out.println("YOU DIDN'T TYPE IN EXIT OR A NUMBER SO THIS IS WRONG. CHOOSE AGAIN.");
+                }
+                String[] splitChoiceAdmin = choiceMade.split(""); // split into two items.
+                if (!(splitChoiceAdmin[0].equalsIgnoreCase("a") || splitChoiceAdmin[0].equalsIgnoreCase("b")) || (Integer.parseInt(splitChoiceAdmin[1]) > countOfReviews)) {
+                    System.out.println("FRICKING PISSING ME OFF WITH THESE INCORRECT QUERIES PICK AGAIN AND DO IT RIGHT THIS TIME");
+                    System.out.println("shopp");
+                } else {
+                    String userName = displayArr[Integer.parseInt(splitChoiceAdmin[1])][0]; // this gives us the user name for the review.
+                    String stationParticularReview = displayArr[Integer.parseInt(splitChoiceAdmin[1])][1]; // this gives us the station.
+                    String shoppingInt = displayArr[Integer.parseInt(splitChoiceAdmin[1])][2];
+                    String connInt = displayArr[Integer.parseInt(splitChoiceAdmin[1])][3];
+                    String commentReview = displayArr[Integer.parseInt(splitChoiceAdmin[1])][4];
+
+                    System.out.println("I'M UPDATING/DELETING THIS REVIEW: " + "userName: " + userName + " station: " + stationParticularReview + " shoppingInt: " + shoppingInt + " connInt: " + connInt + " commentReview: " + commentReview);
+                    System.out.println("%n%n%n%n");
+                    String updateQuery = "UPDATE Review SET approval_status='" + (splitChoiceAdmin[0].equalsIgnoreCase("a") ? "approved" : "rejected") + "' WHERE passenger_id='" + userName + "' AND station_name='" + stationParticularReview + " AND shopping=" + Integer.parseInt(shoppingInt)
+                        + "' AND connection_speed=" + Integer.parseInt(connInt) + " AND comment=" + (commentReview.equals("NULL") ? "NULL" : ("'" + commentReview + "'")) + "";
+                    Statement updateQueryRejectAccept = getStationReviews.createStatement();
+                    ResultSet someSet = updateQueryRejectAccept.executeQuery(updateQuery);
+                }
+            }            
+            
+        }        
     }
 }

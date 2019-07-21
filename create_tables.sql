@@ -19,9 +19,9 @@ CREATE TABLE User
 CREATE TABLE Admin
 (
     ID varchar(255) PRIMARY KEY,
-    FOREIGN KEY(ID) REFERENCES User(ID)
-			ON DELETE CASCADE,
-			CONSTRAINT ADMINIDCASCADES FOREIGN KEY (ID) REFERENCES User(ID) ON UPDATE CASCADE
+    FOREIGN KEY(ID) REFERENCES User(ID) ON UPDATE CASCADE ON DELETE CASCADE
+			/*ON UPDATE CASCADE,
+			CONSTRAINT ADMINIDCASCADES FOREIGN KEY (ID) REFERENCES User(ID) ON DELETE CASCADE*/
 );
 
 CREATE TABLE Station
@@ -66,9 +66,8 @@ CREATE TABLE Card
     uses_left int, 
     expiration_date Date,
     PRIMARY KEY (user_ID, type_of_card, purchase_date_time),
-    FOREIGN KEY(user_ID) REFERENCES User(ID)
-            ON DELETE CASCADE,
-			CONSTRAINT USERCARDCASCADES FOREIGN KEY (user_ID) REFERENCES User(ID) ON UPDATE CASCADE
+    FOREIGN KEY(user_ID) REFERENCES User(ID) ON UPDATE CASCADE ON DELETE CASCADE/*,
+			CONSTRAINT USERCARDCASCADES FOREIGN KEY (user_ID) REFERENCES User(ID) ON UPDATE CASCADE ON DELETE CASCADE*/
 );
 
 CREATE TABLE Trip
@@ -81,11 +80,15 @@ CREATE TABLE Trip
     from_station_name varchar(255) NOT NULL,
     to_station_name varchar(255),
     PRIMARY KEY(user_ID, card_type, card_purchase_date_time, start_date_time),
-    FOREIGN KEY (from_station_name) REFERENCES Station(name),
-    FOREIGN KEY (to_station_name) REFERENCES Station(name),
-    FOREIGN KEY (user_ID, card_type, card_purchase_date_time) REFERENCES Card(user_ID, type_of_card, purchase_date_time)
-            ON DELETE CASCADE,
-			CONSTRAINT CARDTRIPCASCADES FOREIGN KEY (user_ID, card_type, card_purchase_date_time) REFERENCES Card(user_ID, type_of_card, purchase_date_time) ON UPDATE CASCADE
+    FOREIGN KEY (from_station_name) REFERENCES Station(name) ON UPDATE CASCADE ON DELETE CASCADE,
+			/*ON DELETE CASCADE,
+            CONSTRAINT TRIPFROMSTATION FOREIGN KEY(from_station_name) REFERENCES Station(name),*/
+    FOREIGN KEY (to_station_name) REFERENCES Station(name) ON UPDATE CASCADE ON DELETE CASCADE,
+			/*ON DELETE CASCADE,
+            CONSTRAINT TRIPTOSTATION FOREIGN KEY(to_station_name) REFERENCES Station(name),*/
+    FOREIGN KEY (user_ID, card_type, card_purchase_date_time) REFERENCES Card(user_ID, type_of_card, purchase_date_time) ON UPDATE CASCADE ON DELETE CASCADE
+            /*ON DELETE CASCADE,
+			CONSTRAINT CARDTRIPCASCADES FOREIGN KEY (user_ID, card_type, card_purchase_date_time) REFERENCES Card(user_ID, type_of_card, purchase_date_time) ON UPDATE CASCADE*/
 );
 
 CREATE TABLE Review
@@ -101,11 +104,15 @@ CREATE TABLE Review
     edit_timestamp Datetime,
     station_name varchar(255) NOT NULL,
     PRIMARY KEY (passenger_ID, rid),
-    FOREIGN KEY(passenger_ID) REFERENCES User(ID)
-            ON DELETE CASCADE,
-			CONSTRAINT USERREVIEWCASCADES FOREIGN KEY (passenger_ID) REFERENCES User(ID) ON UPDATE CASCADE,
-    FOREIGN KEY(approver_ID) REFERENCES Admin(ID),
-    FOREIGN KEY(station_name) REFERENCES Station(name)
+    FOREIGN KEY(passenger_ID) REFERENCES User(ID) ON UPDATE CASCADE ON DELETE CASCADE,
+            /*ON DELETE CASCADE,
+			CONSTRAINT USERREVIEWCASCADES FOREIGN KEY (passenger_ID) REFERENCES User(ID) ON UPDATE CASCADE,*/
+    FOREIGN KEY(approver_ID) REFERENCES Admin(ID) ON UPDATE CASCADE ON DELETE CASCADE,
+			/*ON DELETE CASCADE,
+            CONSTRAINT ADMINREVIEWCASCADES FOREIGN KEY (approver_ID) REFERENCES Admin(ID) ON UPDATE CASCADE, */
+    FOREIGN KEY(station_name) REFERENCES Station(name) ON UPDATE CASCADE ON DELETE CASCADE
+			/* ON DELETE CASCADE,
+            CONSTRAINT STATIONNAMECASCADE FOREIGN KEY (station_name) REFERENCES Station(name) ON UPDATE CASCADE*/
 );
 
 CREATE TABLE Admin_Add_Line
@@ -113,8 +120,12 @@ CREATE TABLE Admin_Add_Line
     line_name varchar(255) PRIMARY KEY,
     admin_ID varchar(255),
     date_time Datetime,
-    FOREIGN KEY(admin_ID) REFERENCES Admin(ID),
-    FOREIGN KEY(line_name) REFERENCES Line(name)
+    FOREIGN KEY(admin_ID) REFERENCES Admin(ID) ON UPDATE CASCADE ON DELETE CASCADE,
+			/*ON DELETE CASCADE,
+            CONSTRAINT ADMINADDLINE FOREIGN KEY (admin_ID) REFERENCES Admin(ID) ON UPDATE CASCADE,*/
+    FOREIGN KEY(line_name) REFERENCES Line(name) ON UPDATE CASCADE ON DELETE CASCADE
+			/*ON DELETE CASCADE,
+            CONSTRAINT LINENAME FOREIGN KEY (line_name) REFERENCES Line(name) ON UPDATE CASCADE*/
 );
 
 CREATE TABLE Admin_Add_Station
@@ -122,8 +133,12 @@ CREATE TABLE Admin_Add_Station
     station_name varchar(255) PRIMARY KEY,
     admin_ID varchar(255),
     date_time Datetime,
-    FOREIGN KEY(admin_ID) REFERENCES Admin(ID),
-    FOREIGN KEY(station_name) REFERENCES Station(name)
+    FOREIGN KEY(admin_ID) REFERENCES Admin(ID) ON UPDATE CASCADE ON DELETE CASCADE,
+			/*ON DELETE CASCADE,
+            CONSTRAINT ADMINADDSTATION FOREIGN KEY (admin_ID) REFERENCES Admin(ID) ON UPDATE CASCADE,*/
+    FOREIGN KEY(station_name) REFERENCES Station(name) ON UPDATE CASCADE ON DELETE CASCADE
+			/*ON DELETE CASCADE,
+            CONSTRAINT ADMINSTATIONADD FOREIGN KEY (station_name) REFERENCES Station(name) ON UPDATE CASCADE*/
 );
 
 CREATE TABLE Station_On_Line
@@ -132,8 +147,12 @@ CREATE TABLE Station_On_Line
     line_name varchar(255),
     order_number int,
     PRIMARY KEY(station_name, line_name),
-    FOREIGN KEY(station_name) REFERENCES Station(name),
-    FOREIGN KEY(line_name) REFERENCES Line(name)
+    FOREIGN KEY(station_name) REFERENCES Station(name) ON UPDATE CASCADE ON DELETE CASCADE,
+			/*ON DELETE CASCADE,
+            CONSTRAINT STATIONONLINENAMECASCADE FOREIGN KEY (station_name) REFERENCES Station(name) ON UPDATE CASCADE,*/
+    FOREIGN KEY(line_name) REFERENCES Line(name) ON UPDATE CASCADE ON DELETE CASCADE
+			/*ON DELETE CASCADE,
+            CONSTRAINT LINEFORSTATIONNAMECASCADE FOREIGN KEY (line_name) REFERENCES Line(name) ON UPDATE CASCADE*/
 );
 
 /* populate some stuff.*/
@@ -147,6 +166,8 @@ INSERT INTO Station VALUES("random arc", "open", "CA", "AMERICA", "40333", "JM")
 INSERT INTO Line VALUES("The Test Line"); /*testing line and station for reviews.*/
 INSERT INTO Station_On_Line VALUES("Arc", "The Test Line", 3);
 INSERT INTO Station_On_Line VALUES("Not arc", "The Test Line", 2);
+INSERT INTO Admin VALUES("chal68");
+INSERT INTO Card VALUES("AMERICA", "T-mes", sysdate(), NULL, "2019-12-13");
 /*INSERT INTO Card VALUES("chal68", "T-mes", SYSDATE())
 INSERT INTO Card VALUES("chal68", "T-mes", 20191212)*/
 /*INSERT INTO Card VALUES("chal68", "T-mes", 20190506, 50, 20191213);*/

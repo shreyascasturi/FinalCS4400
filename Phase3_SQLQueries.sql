@@ -159,6 +159,8 @@ SELECT * FROM Station_On_Line ORDER BY Station_On_Line.order_number DESC;
 
 
 ''' STATION INFO: '''
-*** NOT DONE ***
 # pull the name, status, address, lines at the station, avg shopping rating, avg connection speed, and all reviews for a certain station
-SELECT name, CONCAT(address, ',', zipcode, ' ', city), AVG(shopping), AVG(connection_speed), line_name FROM Station JOIN Review REV ON Station.name = REV.station_name JOIN Station_On_Line SOL ON REV.station_name = SOL.station_name WHERE Station.name = 'Catalunya' AND Review.approval_status = 'approved';
+SELECT * FROM Station WHERE name = '';
+SELECT AVG(shopping), AVG(connection_speed) FROM Review WHERE station_name = 'Catalunya' AND approval_status = 'approved';
+SELECT line_name from Station_On_Line WHERE station_name = 'Catalunya';
+SELECT first_name, last_name, shopping, connection_speed, comment FROM User JOIN Review WHERE Review.passenger_ID = User.ID AND Review.approval_status = 'approved';

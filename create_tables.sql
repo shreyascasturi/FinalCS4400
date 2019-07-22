@@ -29,7 +29,7 @@ CREATE TABLE Station
     name varchar(255),
     status varchar(255),
     CONSTRAINT ADDINGSTATUSTYPE
-               CHECK (status = 'open' OR status = 'closed' OR status = 'half-capacity'),
+               CHECK (status = 'open' OR status = 'closed' OR status = 'half-open'),
                /* When creating station tuples, we want to check if the status is one of these.
                It cannot be anything but.*/
     state_province varchar(255),
@@ -145,7 +145,7 @@ CREATE TABLE Station_On_Line
 (
     station_name varchar(255),
     line_name varchar(255),
-    order_number int,
+    order_number int UNIQUE,
     PRIMARY KEY(station_name, line_name),
     FOREIGN KEY(station_name) REFERENCES Station(name) ON UPDATE CASCADE ON DELETE CASCADE,
 			/*ON DELETE CASCADE,
@@ -159,14 +159,19 @@ CREATE TABLE Station_On_Line
 INSERT INTO User VALUES("chal68", "Charles", "J", "Hall", "eightchar", "scasturi3@gatech.edu"); /*check if 
        password constraint holds.*/
 INSERT INTO User VALUES("AMERICA", "AM", "E", "RICA", "notefxxx", "america.gmail.com");
+INSERT INTO Admin VALUES("chal68");
 /*INSERT INTO User VALUES("shcar", "Shreyas", "R", "Casturi", "chareno", "american@gatech.edu"); /* should not be added.*/
 INSERT INTO Station VALUES("Arc", "open", "GA", "2714 Something", "30062", "Marietta");
 INSERT INTO Station VALUES("Not arc", "closed", "GA", "AMERICA", "3063", "WHAT");
 INSERT INTO Station VALUES("random arc", "open", "CA", "AMERICA", "40333", "JM");
 INSERT INTO Line VALUES("The Test Line"); /*testing line and station for reviews.*/
-INSERT INTO Station_On_Line VALUES("Arc", "The Test Line", 3);
+INSERT INTO Admin_Add_Line VALUES("The Test Line", "chal68", SYSDATE()); /* testing admin add line*/
+INSERT INTO Admin_Add_Station VALUES("Arc", "chal68", SYSDATE()); /* admin add station */
+INSERT INTO Admin_Add_Station VALUES("Not arc", "chal68", SYSDATE()); /* admin add station */
+INSERT INTO Admin_Add_Station VALUES("random arc", "chal68", SYSDATE()); /* admin add station */
+INSERT INTO Station_On_Line VALUES("Arc", "The Test Line", 3); /* station on line being added. */
 INSERT INTO Station_On_Line VALUES("Not arc", "The Test Line", 2);
-INSERT INTO Admin VALUES("chal68");
+INSERT INTO Station_On_Line VALUES("random arc", "The Test Line", 2);
 INSERT INTO Card VALUES("AMERICA", "T-mes", sysdate(), NULL, "2019-12-13");
 /*INSERT INTO Card VALUES("chal68", "T-mes", SYSDATE())
 INSERT INTO Card VALUES("chal68", "T-mes", 20191212)*/

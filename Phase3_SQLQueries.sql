@@ -51,19 +51,19 @@ INSERT INTO Review VALUES("AMERICA", 101, 3, 4, "", "shcar", "pending", NULL, 'A
 
 ''' VIEW REVIEWS: '''
 # display all of the reviews that a specific user has left
-SELECT * FROM Review WHERE Review.passenger_id = 'shcar';
+SELECT * FROM Review WHERE Review.passenger_ID = 'shcar';
 
 
 
 ''' EDIT REVIEWS: '''
 # display all of the information for a particular review left by a specific user
-SELECT * FROM Review WHERE passenger_id = '' AND rid = '';
+SELECT * FROM Review WHERE passenger_ID = '' AND rid = '';
 # delete a review from the database
-DELETE FROM Review WHERE passenger_id = '' AND rid = '';
+DELETE FROM Review WHERE passenger_ID = '' AND rid = '';
 # update the review and give it the corresponding date/time
-UPDATE Review SET edit_timestamp = '' WHERE passenger_id = '' AND rid = '';
+UPDATE Review SET edit_timestamp = '' WHERE passenger_ID = '' AND rid = '';
 # update the review, changing its status back to pending
-UPDATE Review SET approval_status = 'pending' WHERE passenger_id = '' AND rid = '';
+UPDATE Review SET approval_status = 'pending' WHERE passenger_ID = '' AND rid = '';
 
 
 
@@ -97,15 +97,20 @@ UPDATE User SET first_name = '' AND minit = '' AND last_name = '' AND ID = '' AN
 
 ''' BUY CARD: '''
 # insert a card holder into the database based on the type they choose
-INSERT INTO Card VALUES('chall68', 'T-mes', '12/04/2011 12:00:00 AM', NULL, '01/05/2012 12:00:00 AM');
-# do we have to handle the expiration date requirements for the lightweight option, or is that handled by the GUI?
+INSERT INTO Card VALUES('chall68', 'T-mes', '12/04/2011 12:00:00 AM', NULL, '01/04/2012 12:00:00 AM');
+INSERT INTO Card VALUES('userID2', 'T-10', '12/04/2011 12:00:00 AM', 10, NULL);
+INSERT INTO Card VALUES('userID3', 'T-50/30', '12/04/2011 12:00:00 AM', 50, '01/03/2012 12:00:00 AM');
+INSERT INTO Card VALUES('userID4', 'T-jove', '12/04/2011 12:00:00 AM', NULL, '03/04/2012 12:00:00 AM');
 
 
 
 ''' GO ON A TRIP: '''
-*** NEEDS HELP AND WORK - NOT COMPLETE ***
 # display all the stations that have had cards used by them in alphabetical order, along with the datetime the card was used
-SELECT from_station_name FROM Trip ORDER BY from_station_name;
+SELECT name FROM Station ORDER BY name;
+# populate the list of card types with their respective purchase dates
+SELECT card_type, purchase_date_time FROM Card WHERE user_ID = '';
+# create a trip based off of the station name and the card type/purchase date
+INSERT INTO Trip VALUES('userID', 'card_type', 'card_purchase_date', 'start_date_time', 'end_date_time', 'from_station_name', 'to_station_name');
 
 
 
@@ -164,3 +169,4 @@ SELECT * FROM Station WHERE name = '';
 SELECT AVG(shopping), AVG(connection_speed) FROM Review WHERE station_name = 'Catalunya' AND approval_status = 'approved';
 SELECT line_name from Station_On_Line WHERE station_name = 'Catalunya';
 SELECT first_name, last_name, shopping, connection_speed, comment FROM User JOIN Review WHERE Review.passenger_ID = User.ID AND Review.approval_status = 'approved';
+

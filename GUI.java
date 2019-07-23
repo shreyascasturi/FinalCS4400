@@ -103,6 +103,7 @@ public class GUI {
                                 System.out.println("-------- RETURNING TO LOGIN SCREEN, PASSWORD DOESN'T MATCH WITH GIVEN USERNAME ---------");
                             } else {
                                 System.out.println("Checking admin now...");
+                                System.out.println("this is my username BEFORE USERID: " + username);
                                 userID = username; // set the static variable as username.
                                 Statement adminCheck = newConnect.createStatement(); // create new statement for admin check.
                                 String adminQuery = "SELECT ID From Admin WHERE ID = '" + userID + "'"; // admin query creation
@@ -147,6 +148,7 @@ public class GUI {
                                     break;
                                 } else {
                                     System.out.println("LOGGED IN AS ADMIN..."); // TIME TO DO THIS AS ADMIN FUCK YES
+                                    System.out.println("this is my username AND USERID: " + userID);
                                     isAdmin = true; // set the admin.
                                     while(true) {
                                         int adminGUIresult = MainAdminGUI(); // check how this works
@@ -171,7 +173,7 @@ public class GUI {
                                         } else if (adminGUIresult == 7) { // GOTO LOGIN SCREEN
                                             int lineAddSuccess = addLine();
                                             System.out.println();
-                                            break; // this should break out of the inner loop about the password filling in and go straight to the login screen.
+                                            //break; // this should break out of the inner loop about the password filling in and go straight to the login screen.
                                         } else if (adminGUIresult == 8) {
                                             break;// GOTO LOGIN
                                         } else if (adminGUIresult == 9) { // QUIT TO WELCOME
@@ -349,7 +351,8 @@ public class GUI {
             System.out.printf("CHOOSE A NUMBER TO EXPLORE DIFFERENT OPTIONS. %n 1. Leave Review %n 2. View Reviews %n 3. Buy Card %n 4. Go On Trip %n 5. View Trips %n"
                               + " 6. Edit Profile %n 7. Goto Login %n 8. Goto Welcome Screen %n 9. Quit Fully %n");
             System.out.print("CHOOSE AN OPTION: ");
-            int choosePassengerInt = choosePassengerGUI.nextInt(); // same old, basically.
+            String choosePassenger = choosePassengerGUI.nextLine();
+            int choosePassengerInt = checkIfNumeric(choosePassenger) ? Integer.parseInt(choosePassenger) : -1; // same old, basically.
             if (choosePassengerInt == 1) {
                 // leaveReview(newConnect);
                 // break; //return 0; // leave review
@@ -546,7 +549,7 @@ public class GUI {
                 }
                 displayArr = new String[numOfQueries + 1][6];
                 displayArr[0][0] = "RID"; // fill in the top part of the multi dim array with the categories.
-                displayArr[0][1] = "STATION";
+                displayArr[0][1] = "          STATION";
                 displayArr[0][2] = "          SHOPPING_NUM";
                 displayArr[0][3] = "          CONN_SPEED";
                 displayArr[0][4] = "          COMMENT_TEXT";
@@ -608,9 +611,11 @@ public class GUI {
                         if (secondArrIndex == 1) {
                             stationDisplay(displayArr[firstArrIndex][secondArrIndex], gatherData); // the station and line displays.
                         } else {
+                            System.out.println("----- TRANSITIONING INTO EDIT REVIEW --------- ");
                             int editingSuccess = editReview(displayArr[firstArrIndex][secondArrIndex]);
 
                             System.out.println("EDITED REVIEW");
+                            System.out.println("GOING BACK INTO THE LOOP OF VIEW REVIEWS");
                         }
 
                         //System.out.println("EXITING.");
@@ -641,7 +646,7 @@ public class GUI {
 
 
 
-        String getReviewQuery = "SELECT shopping, connection_speed, comment, approval_status, station_name  FROM Review WHERE passenger_ID='" + userID + "' AND rid='" + rid + "'";
+        String getReviewQuery = "SELECT shopping, connection_speed, comment, approval_status, station_name FROM Review WHERE passenger_ID='" + userID + "' AND rid='" + rid + "'";
 
         ResultSet getReview = theReview.executeQuery(getReviewQuery);
 
@@ -674,7 +679,8 @@ public class GUI {
             System.out.print("ENTER CHOICE: ");
 
             Scanner chooseOption = new Scanner(System.in);
-            int choiceEditString = chooseOption.nextInt();
+            String choiceEdit = chooseOption.nextLine();
+            int choiceEditString = checkIfNumeric(choiceEdit) ? Integer.parseInt(choiceEdit) : -1;
 
             if (choiceEditString == 1) {
                 int shoppingRating;
@@ -686,16 +692,18 @@ public class GUI {
                 while(true) { // these smaller and smaller infinite loops restrict our errors, so making one error forces us to solve that
                     // one error before moving on, input-wise.
                     System.out.print("CHOOSE A SHOPPING RATING FROM 0 TO 5: ");
-                    shoppingRating = chooseOption.nextInt();
+                    String shopOption = chooseOption.nextLine();
+                    shoppingRating = checkIfNumeric(shopOption) ? Integer.parseInt(shopOption): -1;
                     if (shoppingRating < 0 || shoppingRating > 5) {
                         System.out.println("Choose a valid rating."); // valid check on shopping rating.
                         System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.
                     } else {
                         while(true) {
                             System.out.print("CHOOSE A CONNECTION RATING FROM 0 TO 5: "); // valid check on
-                            connectionRating = chooseOption.nextInt();
+                            String connOption = chooseOption.nextLine();
+                            connectionRating = checkIfNumeric(connOption) ? Integer.parseInt(connOption) : -1;
                             if (connectionRating < 0 || connectionRating > 5) {
-                                System.out.println("Choose a valid number");
+                                System.out.println("Choose a valid number. ");
                                 System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user.
                             } else {
                                 System.out.println("userID: " + userID + " ROLE: " + (isAdmin ? "ADMIN" : "PASSENGER")); // this is a string that tells us the userID and passenger/admin role for a given user. // throwing identification everywhere so jackson doesn't get mad.
@@ -705,7 +713,8 @@ public class GUI {
                                 if (commentLeft.length() == 0 || commentLeft.equals("NULL")) {
                                     commentLeft = "NULL";
                                 }
-                                String passQuery = "UPDATE Review SET shopping='" + shoppingRating + "', connection_speed='" + connectionRating + "', comment='" + commentLeft + "' WHERE passenger_ID='" + userID + "' AND rid='" + rid + "'";
+                                String passQuery = "UPDATE Review SET shopping='" + shoppingRating + "', connection_speed='" + connectionRating + "', comment='" + commentLeft + "', approval_status = 'pending', approver_ID=NULL, edit_timestamp = sysdate() WHERE passenger_ID='" + userID + "' AND rid='" + rid + "'";
+                                System.out.println("");
                                 //String passQuery = "INSERT INTO Review VALUES ('" + userID + "', " + count + ", " + shoppingRating + ", " + connectionRating +", '" + commentLeft +  "', NULL, 'pending', NULL, '" + arrStations[getInt] + "')";
                                 ResultSet rgstrSet = theReview.executeQuery(passQuery);
                                 System.out.println("You updated a review.");
@@ -937,7 +946,7 @@ public class GUI {
         int numOfStops = -1; // set the numOfStops impossible
         String nameLine = "Line NUMBER/NAME: "; // prep string
         System.out.printf("%n%n");
-        System.out.println(nameLine + line);
+
         Connection lineConn = newConnect; // bring connection in
         Statement stateLine = newConnect.createStatement(); // create statement
         String[][] displayArr; // the array that'll be displayed.
@@ -947,6 +956,7 @@ public class GUI {
         //ArrayList<String> checkChoiceList = new ArrayList<>(Arrays.asList(arrChoiceSort));
 
         while(true) {
+            System.out.println(nameLine + line);
             if (!(addition.equals("REGULAR"))) {
                 queryToExec = "SELECT station_name, order_number FROM Station_On_Line WHERE line_name='" + line + "' ORDER BY " + addition; // query to execute.
                 System.out.println("QUERY: " + queryToExec);
@@ -983,11 +993,19 @@ public class GUI {
             System.out.println("NUMBER OF STOPS: " + numOfStops);
             System.out.println();
 
+            System.out.println("If you want to choose a particular station, choose <station_index><0>. So, the 10th station would be 100.");
             System.out.printf("Type in EXIT to get out of this page and back to the previous page, or specify sorting by typing SORT <category> ASC/DESC, respectively. <category> = station_name || order_number. CHOOSE: ");
 
             String lineChoice = anotherScan.nextLine();
             if (lineChoice.equalsIgnoreCase("EXIT")) {
                 return 0;
+            } else if (checkIfNumeric(lineChoice)) {
+                int stationOnLineChoice = Integer.parseInt(lineChoice); // get the fucking int.
+                if (stationOnLineChoice > 9 && stationOnLineChoice <= (10 * numOfStops) && stationOnLineChoice % 10 == 0) {
+                    stationDisplay(displayArr[stationOnLineChoice / 10][0], lineConn); // picks a number to goto the station.
+                } else {
+                    System.out.println("You picked the wrong number. Come on. Come on.");
+                }
             } else {
                 String[] choiceArr = lineChoice.split(" ");
                 if (choiceArr[0].trim().equalsIgnoreCase("sort") && (choiceArr[1].equals("station_name") || choiceArr[1].equals("order_number")) && (choiceArr[2].trim().equalsIgnoreCase("asc") || choiceArr[2].trim().equalsIgnoreCase("desc"))) {
@@ -1206,8 +1224,10 @@ public class GUI {
                             expDay = arrExpCardDate[cardInt].substring(8, arrExpCardDate[cardInt].length());
                         }
 
+                        System.out.println("ARREXP CARD DATE: " + arrExpCardDate[cardInt]);
+
                         if ((!(arrUses[cardInt] == null) && arrUses[cardInt].equals("0"))
-                            || ((!(arrExpCardDate[cardInt].equals("NULL"))) && (expYear.compareTo(String.valueOf(curYear)) < 0
+                            || ((!(arrExpCardDate[cardInt] == null)) && (expYear.compareTo(String.valueOf(curYear)) < 0
                                 || (expYear.equals(String.valueOf(curYear)) && expMonth.compareTo(curMonth < 10 ? "0" + curMonth : String.valueOf(curMonth)) < 0)
                                 || (expYear.equals(String.valueOf(curYear)) && expMonth.equals(curMonth < 10 ? "0" + curMonth : String.valueOf(curMonth)) && expDay.compareTo(curDay < 10 ? "0" + curDay : String.valueOf(curDay)) < 0)))) {
 
@@ -1700,6 +1720,40 @@ public class GUI {
        TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
        TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
     **/
+     /**
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+       TRANSITIONING INTO ADMIN AREAS TRANSITIONING INTO ADMIN AREAS
+    **/
+    
+
 
 
 
@@ -1756,8 +1810,8 @@ public class GUI {
             } else if (chooseAdminInt == 7) { // ADD LINE
                 System.out.println("------------ADD LINE------------");
                 System.out.println("");
-                userID = ""; // reset as empty.
-                isAdmin = false; // reset as false even though it is false.
+                //userID = ""; // reset as empty.
+                //isAdmin = false; // reset as false even though it is false.
                 return 7;
             } else if (chooseAdminInt == 8) { // goto LOGIN SCREEN
                 System.out.println("------------LOGGING OUT GOTO LOGIN------------");
@@ -1857,7 +1911,7 @@ public class GUI {
                 }
 
             } else { // assume rejection/approval of a review
-                if (choiceMade.length() != 2) {
+                if (choiceMade.length() < 2) {
                     System.out.println("YOU DIDN'T TYPE IN EXIT OR A NUMBER SO THIS IS WRONG. CHOOSE AGAIN.");
                 }
                 String[] splitChoiceAdmin = choiceMade.split(""); // split into two items.
@@ -1866,20 +1920,26 @@ public class GUI {
                     System.out.println("shopp");
                     System.out.println("--------RESTARTING THE DISPLAYING OF REVIEWS ---------");
                 } else {
-                    String userName = displayArr[Integer.parseInt(splitChoiceAdmin[1])][0]; // this gives us the user name for the review.
-                    String stationParticularReview = displayArr[Integer.parseInt(splitChoiceAdmin[1])][1]; // this gives us the station.
-                    String shoppingInt = displayArr[Integer.parseInt(splitChoiceAdmin[1])][2]; // GET THE INT SHOPPING
-                    String connInt = displayArr[Integer.parseInt(splitChoiceAdmin[1])][3]; // GET THE CONN INT
-                    String commentReview = displayArr[Integer.parseInt(splitChoiceAdmin[1])][4]; // GET THE COMMENT
+                    if (checkIfNumeric(choiceMade.substring(1, choiceMade.length())) && Integer.parseInt(choiceMade.substring(1, choiceMade.length())) <= countOfReviews && Integer.parseInt(choiceMade.substring(1, choiceMade.length())) > 0) {
+                        String userName = displayArr[Integer.parseInt(choiceMade.substring(1, choiceMade.length()))][0]; // this gives us the user name for the review.
+                        String stationParticularReview = displayArr[Integer.parseInt(choiceMade.substring(1, choiceMade.length()))][1]; // this gives us the station.
+                        String shoppingInt = displayArr[Integer.parseInt(choiceMade.substring(1, choiceMade.length()))][2]; // GET THE INT SHOPPING
+                        String connInt = displayArr[Integer.parseInt(choiceMade.substring(1, choiceMade.length()))][3]; // GET THE CONN INT
+                        String commentReview = displayArr[Integer.parseInt(choiceMade.substring(1, choiceMade.length()))][4]; // GET THE COMMENT
 
-                    System.out.println("I'M UPDATING/DELETING THIS REVIEW: " + "userName: " + userName + ", station: " + stationParticularReview + ", shoppingInt: " + shoppingInt + ", connInt: " + connInt + ", commentReview: " + commentReview);
-                    System.out.println("%n%n%n%n");
-                    String updateQuery = "UPDATE Review SET approval_status='" + (splitChoiceAdmin[0].equalsIgnoreCase("a") ? "approved" : "rejected") + "', approver_ID ='" + userID + "' WHERE passenger_id='" + userName + "' AND station_name='" + stationParticularReview + "' AND shopping=" + Integer.parseInt(shoppingInt)
-                        + " AND connection_speed=" + Integer.parseInt(connInt) + " AND comment='" + commentReview + "'";
-                    System.out.println("update query is: " + updateQuery);
+                        System.out.println("I'M UPDATING/DELETING THIS REVIEW: " + "userName: " + userName + ", station: " + stationParticularReview + ", shoppingInt: " + shoppingInt + ", connInt: " + connInt + ", commentReview: " + commentReview);
+                        System.out.println("%n%n%n%n");
+                        String updateQuery = "UPDATE Review SET approval_status='" + (splitChoiceAdmin[0].equalsIgnoreCase("a") ? "approved" : "rejected") + "', approver_ID ='" + userID + "' WHERE passenger_id='" + userName + "' AND station_name='" + stationParticularReview + "' AND shopping=" + Integer.parseInt(shoppingInt)
+                            + " AND connection_speed=" + Integer.parseInt(connInt) + " AND comment='" + commentReview + "'";
+                        System.out.println("update query is: " + updateQuery);
 
-                    Statement updateQueryRejectAccept = getStationReviews.createStatement();
-                    ResultSet someSet = updateQueryRejectAccept.executeQuery(updateQuery);
+                        Statement updateQueryRejectAccept = getStationReviews.createStatement();
+                        ResultSet someSet = updateQueryRejectAccept.executeQuery(updateQuery);
+                        
+                    } else {
+                        System.out.println("you tried to delete or approve wrong bruh, pick a correct index.");
+                    }
+
                 }
             }
 
@@ -1908,7 +1968,7 @@ public class GUI {
             ArrayList<String> LinesList = new ArrayList<>(); // creates an array list to add names of lines.
             String queryToGetStationInfo = "SELECT address, status FROM Station WHERE name='" + nameStation + "'";
             String getLinesForStation = "SELECT line_name FROM Station_On_Line WHERE station_name='" + nameStation + "'";
-            String getReviewsForStation = "SELECT passenger_ID, shopping, connection_speed, comment FROM Review WHERE station_name='" + nameStation +"' AND approval_status='approved'";
+            String getReviewsForStation = "SELECT first_name, minit, last_name, shopping, connection_speed, comment FROM Review JOIN User WHERE passenger_ID = User.ID AND approval_status = 'approved' AND station_name='" + nameStation +"'";
             String getCountReviews = "SELECT COUNT(passenger_ID) FROM Review WHERE station_name='" + nameStation +"' AND approval_status='approved'";
             String getAvgShoppingConn = "SELECT AVG(shopping), AVG(connection_speed) FROM Review WHERE station_name='" + nameStation + "' AND approval_status='approved'";
             ResultSet StationInfoAddrStat = connectOnStation.executeQuery(queryToGetStationInfo); // address and info
@@ -1930,16 +1990,19 @@ public class GUI {
 
             if (approvedReviewsForStation == 0) { // we'll have an empty array.
                 reviewArr = new String[approvedReviewsForStation + 1][4]; // create the array.
-                reviewArr[0][0] = "USER";
-                reviewArr[0][1] = "SHOPPING";
-                reviewArr[0][2] = "CONNECTION_SPEED";
-                reviewArr[0][3] = "COMMENT"; // labeling categories.
+                reviewArr[0][0] = "FIRST";
+                reviewArr[0][1] = "M.I.";
+                reviewArr[0][2] = "LAST";
+                reviewArr[0][3] = "SHOPPING"; // labeling categories.
+                reviewArr[0][4] = "CONNECTION_SPEED";
+                reviewArr[0][5] = "COMMENT";
+                    
 
                 int rowInt = 1;
                 int colInt = 1;
                 while (ReviewsForStationAppr.next()) {
                     if (rowInt > approvedReviewsForStation) {break;}
-                    while(colInt <= 4) {
+                    while(colInt <= 6) {
                         reviewArr[rowInt][colInt - 1] = ReviewsForStationAppr.getString(colInt);
                         colInt++;
                     }
@@ -1982,18 +2045,20 @@ public class GUI {
                 }
 
             } else {
-                reviewArr = new String[approvedReviewsForStation + 1][4]; // create the array.
-                reviewArr[0][0] = "USER";
-                reviewArr[0][1] = "SHOPPING";
-                reviewArr[0][2] = "CONNECTION_SPEED";
-                reviewArr[0][3] = "COMMENT";
+                reviewArr = new String[approvedReviewsForStation + 1][4]; // create the array.                
+                reviewArr[0][0] = "FIRST";
+                reviewArr[0][1] = "M.I.";
+                reviewArr[0][2] = "LAST";
+                reviewArr[0][3] = "SHOPPING";
+                reviewArr[0][4] = "CONNECTION_SPEED";
+                reviewArr[0][5]=  "COMMENT";
 
 
                 int rowInt = 1;
                 int colInt = 1;
                 while (ReviewsForStationAppr.next()) {
                     if (rowInt > approvedReviewsForStation) {break;}
-                    while(colInt <= 4) {
+                    while(colInt <= 6) {
                         reviewArr[rowInt][colInt - 1] = ReviewsForStationAppr.getString(colInt);
                         colInt++;
                     }
@@ -2176,7 +2241,7 @@ public class GUI {
                     System.out.println("I'M IN WHERE I NEED TO BE.");
                     String choiceMake = choiceArr[1] + " " + choiceArr[2]; // i'm not even going to check whether they typed the right thing
                     System.out.println(choiceMake);
-                    return lineDisplay(line, newConnect, choiceMake); // make this recursive to sort.
+                    return lineAdminDisplay(line, newConnect, choiceMake); // make this recursive to sort.
                 } else {
                     System.out.println("Type correctly next time.");
                 }
@@ -2372,9 +2437,8 @@ public class GUI {
                 System.out.println("You exited the registration at FirstName. Good-bye.");
                 return 0; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
             } else {
-
                 Statement namecheck = newConnect.createStatement();
-                String testNameQuery = "SELECT * FROM Station WHERE name='" + name + "'";
+                String testNameQuery = "SELECT * FROM Station_On_Line WHERE station_name='" + name + "'";
                 ResultSet testNameSet = namecheck.executeQuery(testNameQuery);
                 boolean uniqueName = true;
 
@@ -2485,16 +2549,16 @@ public class GUI {
                                                                                         } else {
                                                                                             while (true) {
                                                                                                 System.out.println("ENTER ORDER NUMBER OR -1 TO GO BACK TO LINE: ");
-                                                                                                orderNum[count] = registration.nextLine();
+                                                                                                orderNum[count] = (registration.nextLine());
                                                                                                 if (orderNum[count].equalsIgnoreCase("exit")) {
                                                                                                     System.out.println("You exited the registration at order number. Good-bye.");
                                                                                                     return 0;
                                                                                                 } else if (orderNum[count].equals("-1")) {
                                                                                                     break;
                                                                                                 } else {
-
                                                                                                     Statement lineOrderCheck = newConnect.createStatement();
-                                                                                                    String lineOrderQuery = "SELECT * FROM Station_On_Line WHERE line_name='" + line + "' AND order_number='" + orderNum[count] + "'";
+                                                                                                    String lineOrderQuery = "SELECT * FROM Station_On_Line WHERE line_name='" + line[count] + "' AND order_number=" + Integer.parseInt(orderNum[count]);
+                                                                                                    System.out.println("PRINT OUT LINE ORDER QUERY: " + lineOrderQuery);
                                                                                                     ResultSet lineOrderSet = lineOrderCheck.executeQuery(lineOrderQuery);
                                                                                                     boolean uniqueLineOrder = true;
 
@@ -2553,9 +2617,9 @@ public class GUI {
                                                                                                         System.out.println("");
 
                                                                                                         Statement rgstrcheck = newConnect.createStatement();
-                                                                                                        String passQuery = "INSERT INTO Station VALUES ('" + name + "', '" + status + "', " + stateProvince + ", '" + address + "', '" + zipcode + "', '" + city + "')";
+                                                                                                        String passQuery = "INSERT INTO Station VALUES ('" + name + "', '" + status + "', '" + stateProvince + "', '" + address + "', '" + zipcode + "', '" + city + "')";
                                                                                                         ResultSet rgstrSet = rgstrcheck.executeQuery(passQuery);
-                                                                                                        String adminAddQuery = "INSERT INTO Admin_Add_Station VALUES ('" + name + "', " + userID + "', sysdate())";
+                                                                                                        String adminAddQuery = "INSERT INTO Admin_Add_Station VALUES ('" + name + "', '" + userID + "', sysdate())";
                                                                                                         ResultSet amdinAddSet = rgstrcheck.executeQuery(adminAddQuery);
 
                                                                                                         // String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
@@ -2602,25 +2666,126 @@ public class GUI {
         }
     }
 
+
+    // public static int addStation() throws Exception {
+    //     Connection newConnect = getConnection();
+    //     Scanner addStat = new Scanner(System.in);
+    //     String[] arrayOfLines;
+    //     int allLineCount = -1;
+    //     boolean isAdded = false;
+    //     String nameOfStation;
+    //     String state_province;
+    //     String address;
+    //     int zipcode;
+    //     String city;
+
+    //     while(true) {
+    //         System.out.print("Enter a name for the station. type in exit to get out: "); // get name of station
+    //         nameOfStation = addStat.nextLine();
+    //         if (nameOfStation.equalsIgnoreCase("exit")) {
+    //             System.out.println("RETURNING TO ADMIN GUI");
+    //             return 0;
+    //         }
+    //         if (nameOfStation.length() == 0) {
+    //             System.out.println("We must have a name put here."); //force a name.
+    //         } else {
+    //             String checkStationExist = "SELECT name FROM Station WHERE name='" + nameOfStation + "'";
+    //             String checkStationLine = "SELECT station_name FROM Station_On_Line WHERE station_name='" + nameOfStation + "'";
+    //             ResultSet solelyStation = getConnection.createStatement().executeQuery(checkStationExist);
+    //             ResultSet stationLine = getConnection.createStatement().executeQuery(checkStationLine);
+    //             if (!solelyStation.isBeforeFirst() && !stationLine.isBeforeFirst()) {
+    //                 String queryOfCombo = "SELECT name FROM Station WHERE ";
+    //                 while(true) {
+    //                     System.out.print("Enter a state/province: ");
+    //                     state_province = addStat.nextLine();
+    //                     if (state_province.equalsIgnoreCase("exit")) {
+    //                         System.out.println("EXIT");
+    //                         return 0;
+    //                     }
+    //                     if (state_province.length() == 0) {
+    //                         System.out.println("Enter it again and don't make it blank.");
+    //                     } else {
+    //                         break;
+    //                     }                        
+    //                 }
+    //                 System.out.printf("%n%n");
+    //                 while(true) {
+    //                     System.out.printf("Enter an address: ");
+    //                     address = addStat.nextLine();
+    //                     if (address.equalsIgnoreCase("exit")) {
+    //                         System.out.println("EXIT");
+    //                         return 0;
+    //                     }
+    //                     if (address.length() == 0) {
+    //                         System.out.println("Enter address correctly next time.");
+    //                     } else {
+    //                         break;
+    //                     }
+
+    //                 }
+    //                 System.out.printf("%n%n");
+    //                 while(true) {
+    //                     System.out.printf("Enter zipcode: ");
+    //                     String zipcodeTest = addStat.nextLine();
+    //                     if (zipcodeTest.equalsIgnoreCase("EXIT")) {
+    //                         return 0;
+    //                     }
+    //                     if (zipcodeTest.length() == 0) {
+    //                         System.out.println("enter correctly.");
+    //                     }
+    //                     if (!checkIfNumeric(zipcodeTest)) {
+    //                         System.out.println("enter zipcode correctly man.");
+    //                     } else {
+    //                         zipcode = Integer.parseInt(zipcodeTest);
+    //                         break;
+    //                     }
+    //                 }
+
+    //                 System.out.printf("%n%n");
+    //                 while(true) {
+    //                     System.out.printf("Enter city: ");
+    //                     city = addStat.nextLine();
+    //                     if (city.equalsIgnoreCase("EXIT")) {
+    //                         System.out.println("RETURNING TO ADMIN");
+    //                         return 0;
+    //                     } else if (city.length() == 0) {
+    //                         System.out.println("Don't enter a blank city");
+    //                     } else {
+    //                         break;
+    //                     }
+                        
+    //                 }
+
+    //                 queryOfCombo += "state_province='" + state_province + "' AND address='" + address + "' AND zipcode=" + zipcode + " AND city='" + city + "'";
+    //                 ResultSet checkTheCombo = getConnection.createStatement().executeQuery(queryOfCombo);
+    //                 if (checkTheCombo.isBeforeFirst()) {
+    //                     System.out.println("This combination wasn't unique, and hence must be re-done again.");
+    //                     System.out.println("TRANSITIONING TO RE-ADD WHOLE TUPLE");
+    //                 } else {
+                        
+    //                 }
+                    
+                    
+    //             } else {
+    //                 System.out.println("This is most likely in the list of stations, and therefore can't be added. re-add.");
+    //                 System.out.println("---- TRANSITIONING TO RE-ADD ---- ");
+    //             } // they're empty
+    //         }
+            
+    //     }
+     
+    // }
+
     public static int addLine() throws Exception {
         Connection newConnect = getConnection();
         Scanner registration = new Scanner(System.in);
+        String[] arrayOfAllStations;
+        int allStationCount = -1;
 
-        Statement getAllStations = newConnect.createStatement();
-
-        String getStationQueryNum = "SELECT COUNT(name) FROM Station"; // get the count of Stations
-        ResultSet getNumStations = getAllStations.executeQuery(getStationQueryNum); // get the count of stations.
-        int stationCount = -5; // set random num
-        while(getNumStations.next()) {
-            stationCount = Integer.parseInt(getNumStations.getString("COUNT(name)")); // getNum = count of stations.
-        }
-
+        Statement getAllStations = newConnect.createStatement(); // will help get all stations.
         String name;
-        String station[] = new String[stationCount];
-        int count = 0;
-
-        while (true) {
-            System.out.println("CHOOSE NAME FOR NEW LINE: ");
+        while(true) {
+            System.out.print("CHOOSE NAME FOR NEW LINE: ");
             name = registration.nextLine();
             if (name.equalsIgnoreCase("exit")) {
                 System.out.println("You exited the editor at Line Name. Good-bye.");
@@ -2629,110 +2794,228 @@ public class GUI {
                 if (name.length() == 0 || name.equals("NULL")) {
                     System.out.println("Type a line name please");
                 } else {
-                    while (true) {
-                        String getStationNamesQuery = "SELECT name FROM Station ORDER BY name"; // order by name, assume we only have to get from stations.
-                        ResultSet getStationNames = getAllStations.executeQuery(getStationNamesQuery); // get the stations.
-
-                        String[] arrStationNames = new String[stationCount];
-                        int[] arrStationNumbers = new int[stationCount];
-                        int fillIndex = 0;
-                        while (getStationNames.next()) {
-                                    arrStationNames[fillIndex] = getStationNames.getString("name"); // get the value out of the column "name"
-                                    //arrStationNumbers[fillIndex] = "Not On Line";
-                                    fillIndex++;
-                                }
-                        //System.out.println("ARRAY FOR LINES: " + Arrays.toString(arrStationNames));
-                        System.out.println("ALL STATIONS AND ORDER ON LINE: ");
-                        String stationOrderNum = arrStationNumbers[count] == 0 ? "Not On Line" : String.valueOf(arrStationNumbers[count]);
-                        for (int i = 0; i < fillIndex; i++) {
-                            System.out.println(arrStationNames[i] + " [ " + stationOrderNum + " ]");
-                        }
-
-                        System.out.println();
-                        System.out.println("ENTER *NAME OF* STATION YOU WOULD LIKE TO ADD TO LINE: " + name);
-                        station[count] = registration.nextLine();
-                        if (station[count].equalsIgnoreCase("exit")) {
-                            System.out.println("You exited the editor at Add Station. Good-bye");
-                            return 0;
-                        } else {
-                            boolean isInStations = false;
-                            for (int i = 0; i < count; i++) {
-                                if (station[count].equals(station[i]))
-                                    isInStations = true;
-                            }
-
-                            if (name.length() == 0 || name.equals("NULL") || isInStations) {
-                                System.out.println("Type a valid Station Name please");
-                            } else {
-
-
-
-                                while (true) {
-                                    System.out.println("ENTER ORDER NUMBER FOR " + station[count] + " OR 0 TO EXIT");
-                                    Scanner chooseOrderNum = new Scanner(System.in);
-                                    arrStationNumbers[count] = chooseOrderNum.nextInt();
-                                    if (arrStationNumbers[count] == 0) {
-                                        System.out.println("You exited the editor at Order Number. Good-bye");
-                                        return 0;
-                                    } else {
-                                        boolean isInNums = false;
-                                        for(int i = 0; i < count; i++) {
-                                            if (arrStationNumbers[count] == arrStationNumbers[i]) {
-                                                isInNums = true;
-                                            }
-                                        }
-
-                                        if (arrStationNumbers[count] < 0) {
-                                            System.out.println("Enter a valid order number please");
-                                        } else {
-                                            count++;
-                                            while (true) {
-                                                System.out.println("ADD ANOTHER STATION TO LINE?");
-                                                System.out.println("(1): YES");
-                                                System.out.println("(2): NO");
-
-                                                int userSelection = chooseOrderNum.nextInt();
-
-                                                if (userSelection == 1) {
-                                                    break;
-                                                } else if (userSelection == 2) {
-
-                                                    System.out.println("");
-
-                                                    Statement rgstrcheck = newConnect.createStatement();
-
-
-
-
-                                                    String passQuery = "INSERT INTO Line VALUES ('" + name + "')";
-                                                    ResultSet rgstrSet = rgstrcheck.executeQuery(passQuery);
-                                                    String adminAddQuery = "INSERT INTO Admin_Add_Line VALUES ('" + name + "', '" + userID + "', sysdate())";
-                                                    ResultSet adminAddSet = rgstrcheck.executeQuery(adminAddQuery);
-
-                                                    for (int j = 0; j < count; j++) {
-                                                        String lineAddQuery = "INSERT INTO Station_On_Line VALUES ('" + station[j] + "', '" + name + "', '" + arrStationNumbers[j] + "')";
-                                                        ResultSet lineAddSet = rgstrcheck.executeQuery(lineAddQuery);
-                                                    }
-
-                                                    System.out.println("Congrats you added a line");
-                                                    return 0;
-
-                                                } else {
-                                                    System.out.println("Enter a valid number");
-                                                }
-                                            }
-                                        }
-                                        break;
-                                    }
-                                }
-                            }
-                        }
+                    String getUniqueLines = ("SELECT name FROM Line WHERE name='" + name +"'"); // if this is empty, then we know it's unique.
+                    ResultSet getUniqueL = getAllStations.executeQuery(getUniqueLines);
+                    if (getUniqueL.isBeforeFirst()){ // the set isn't empty which means something's wrong.
+                        System.out.println("this line is not a unique line, pick again.");
+                        System.out.println("------------- TRANSITIONING BACK INTO LINE CREATION. ------------ ");
+                        System.out.printf("\n\n");            
+                    } else {
+                        //System.out.println("this is the name of the line being added: " + name);
+                        String passQuery = "INSERT INTO Line VALUES ('" + name + "')";
+                        //System.out.println("PASS QUERY: " + passQuery);
+                        ResultSet rgstrSet = getAllStations.executeQuery(passQuery);
+                        //System.out.println("this is name");
+                        String adminAddQuery = "INSERT INTO Admin_Add_Line VALUES('" + name + "', '" + userID + "', sysdate())";
+                        //System.out.println("ADMIN ADD QUERY: " + adminAddQuery);
+                        ResultSet adminAddSet = getAllStations.executeQuery(adminAddQuery);
+                        System.out.println("You've added a line, and can now add additional stations onto that line.");
+                        break; // breaks out of this while true loop.
 
                     }
                 }
             }
+        }
 
+        // now, get the stations in alphabetical order.
+        String queryOfStationCount = "SELECT COUNT(name) FROM Station";
+        ResultSet getStationQueryNum = getAllStations.executeQuery(queryOfStationCount);
+        while (getStationQueryNum.next()) {
+            allStationCount = Integer.parseInt(getStationQueryNum.getString("COUNT(name)"));  // this puts the count into allStationCount
+        }
+
+        String getStationNames = "SELECT name From Station ORDER BY name";
+        ResultSet gettingNamesAlph = getAllStations.executeQuery(getStationNames); // get the result set of station names.
+        arrayOfAllStations = new String[allStationCount];
+        int rowCol = 1;
+        while (gettingNamesAlph.next()) {
+            arrayOfAllStations[rowCol - 1] = gettingNamesAlph.getString(1); // this puts the names into an array.
+            rowCol++;
+        }
+
+        //System.out.println("LOOK MA THE ARRAY IN ALPHABETICAL ORDER: " + Arrays.toString(arrayOfAllStations));
+        //return 5;
+
+        while(true) {
+            System.out.println("THE ARRAY OF STATIONS: " + Arrays.toString(arrayOfAllStations)); // the array of all stations
+            System.out.printf("\n\n");
+            System.out.print("Add a station to the line by typing in the index [0 .. n - 1] or type exit to simply add the line.");
+            String inputArrayExit = registration.nextLine();
+            if (inputArrayExit.equalsIgnoreCase("exit")) {
+                System.out.println("Thank you for using the line adder. RETURNING TO ADMIN GUI.");
+                return 0;
+            } else if (checkIfNumeric(inputArrayExit) && Integer.parseInt(inputArrayExit) >= 0 && Integer.parseInt(inputArrayExit) <= allStationCount - 1) {
+                String checkUniqueStation = "SELECT station_name FROM Station_On_Line WHERE station_name='" + arrayOfAllStations[Integer.parseInt(inputArrayExit)] + "' AND line_name='" + name + "'"; // if empty, we good.
+                ResultSet uniqueOnLine = getAllStations.executeQuery(checkUniqueStation); // check if the station you're adding is already on the line in some capacity.
+                if (!uniqueOnLine.isBeforeFirst()) {
+                    System.out.print("Enter an order number: ");
+                    String inputOrder = registration.nextLine();
+                    if (!(checkIfNumeric(inputOrder))) {
+                        System.out.println("YOU GOTTA TYPE NUMBERS WHEN IT SAYS NUMBERS COME ON");
+                    } else if (checkIfNumeric(inputOrder) && Integer.parseInt(inputOrder) > 0) {
+                        String uniqueOrder = "SELECT order_number FROM Station_On_Line WHERE order_number=" + Integer.parseInt(inputOrder)  + " AND line_name='" + name + "'";
+                        //System.out.println("UNIQUE ORDER: " + uniqueOrder);
+                        ResultSet uniqueOrderOnLine = getAllStations.executeQuery(uniqueOrder); // if this is not empty, we failed.
+                        if (uniqueOrderOnLine.isBeforeFirst()) {
+                            System.out.println("the order number on this line is already taken.");
+                        } else {
+                            String finalExecute = "INSERT INTO Station_On_Line VALUES('" + arrayOfAllStations[Integer.parseInt(inputArrayExit)] + "', '" + name + "', " + Integer.parseInt(inputOrder) + ")";                           
+                            ResultSet execution = getAllStations.executeQuery(finalExecute);
+                            System.out.println("----- TRANSITIONING TO ADDING ANOTHER STATION ON THE LINE ------");
+                        }
+                    } else {
+                        System.out.println("Give a number in the boundaries.");
+                        System.out.println("----- TRANSITIONING TO ADDING ANOTHER STATION ON THE LINE ------");
+                    }                    
+                } else {
+                    System.out.println("The station is already in the line. Do this again.");
+                    System.out.println("----- TRANSITIONING TO ADDING A STATION ON A LINE ------");
+                }
+            } else {
+                System.out.println("Dude what are you typing just type simple things man");
+                System.out.println("------- TRANSITIONING TO ADDING A STATION TO A LINE ------- ");
+            }
+            
         }
     }
+
+    // public static int addLine() throws Exception {
+    //     Connection newConnect = getConnection();
+    //     Scanner registration = new Scanner(System.in);
+
+    //     Statement getAllStations = newConnect.createStatement(); // will help get all stations.
+
+    //     String getStationQueryNum = "SELECT COUNT(name) FROM Station"; // get the count of Stations
+    //     ResultSet getNumStations = getAllStations.executeQuery(getStationQueryNum); // get the count of stations.
+    //     int stationCount = -5; // set random num
+    //     while(getNumStations.next()) {
+    //         stationCount = Integer.parseInt(getNumStations.getString("COUNT(name)")); // getNum = count of stations.
+    //     }
+
+    //     String name;
+    //     String station[] = new String[stationCount]; // a station array initialized to the amount of stations.
+    //     int count = 0;
+
+    //     while (true) {
+    //         System.out.println("CHOOSE NAME FOR NEW LINE: ");
+    //         name = registration.nextLine();
+    //         if (name.equalsIgnoreCase("exit")) {
+    //             System.out.println("You exited the editor at Line Name. Good-bye.");
+    //             return 0; // this goes to the two lines all the way at the end of the method, the 'unreachables.'
+    //         } else {
+    //             if (name.length() == 0 || name.equals("NULL")) {
+    //                 System.out.println("Type a line name please");
+    //             } else {
+    //                 String getUniqueLines = ("SELECT name FROM Line WHERE name='" + name +"'"); // if this is empty, then we know it's unique.
+    //                 ResultSet getUniqueL = getAllStations.executeQuery(getUniqueLines);
+    //                 if (getUniqueL.isBeforeFirst()){ // the set isn't empty which means something's wrong.
+    //                     System.out.println("this line is not a unique line, pick again.");
+    //                     System.out.println("------------- TRANSITIONING BACK INTO LINE CREATION. ------------ ");
+    //                     System.out.printf("\n\n");
+    //                 } else {
+    //                     while (true) {
+    //                         String getStationNamesQuery = "SELECT name FROM Station ORDER BY name"; // order by name, assume we only have to get from stations.
+    //                         ResultSet getStationNames = getAllStations.executeQuery(getStationNamesQuery); // get the stations in alphabetical order.
+
+    //                         String[] arrStationNames = new String[stationCount]; // will contain all the names of the stations.
+    //                         int[] arrStationNumbers = new int[stationCount];
+    //                         int fillIndex = 0;
+    //                         while (getStationNames.next()) {
+    //                             arrStationNames[fillIndex] = getStationNames.getString("name"); // get the value out of the column "name"
+    //                             //arrStationNumbers[fillIndex] = "Not On Line";
+    //                             fillIndex++;
+    //                         }
+    //                         //System.out.println("ARRAY FOR LINES: " + Arrays.toString(arrStationNames));
+    //                         System.out.println("ALL STATIONS AND ORDER ON LINE: ");
+    //                         String stationOrderNum = arrStationNumbers[count] == 0 ? "Not On Line" : String.valueOf(arrStationNumbers[count]);
+    //                         for (int i = 0; i < fillIndex; i++) {
+    //                             System.out.println(arrStationNames[i] + " [ " + stationOrderNum + " ]");
+    //                         }
+
+    //                         System.out.println();
+    //                         System.out.println("ENTER *NAME OF* STATION YOU WOULD LIKE TO ADD TO LINE: " + name);
+    //                         station[count] = registration.nextLine();
+    //                         if (station[count].equalsIgnoreCase("exit")) {
+    //                             System.out.println("You exited the editor at Add Station. Good-bye");
+    //                             return 0;
+    //                         } else {
+    //                             boolean isInStations = false;
+    //                             for (int i = 0; i < count; i++) {
+    //                                 if (station[count].equals(station[i]))
+    //                                     isInStations = true;
+    //                             }
+
+    //                             if (name.length() == 0 || name.equals("NULL") || isInStations) {
+    //                                 System.out.println("Type a valid Station Name please");
+    //                             } else {
+    //                                 while (true) {
+    //                                     System.out.println("ENTER ORDER NUMBER FOR " + station[count] + " OR 0 TO EXIT");
+    //                                     Scanner chooseOrderNum = new Scanner(System.in);
+    //                                     arrStationNumbers[count] = chooseOrderNum.nextInt();
+    //                                     if (arrStationNumbers[count] == 0) {
+    //                                         System.out.println("You exited the editor at Order Number. Good-bye");
+    //                                         return 0;
+    //                                     } else {
+    //                                         boolean isInNums = false;
+    //                                         for(int i = 0; i < count; i++) {
+    //                                             if (arrStationNumbers[count] == arrStationNumbers[i]) {
+    //                                                 isInNums = true;
+    //                                             }
+    //                                         }
+
+    //                                         if (arrStationNumbers[count] < 0) {
+    //                                             System.out.println("Enter a valid order number please");
+    //                                         } else {
+    //                                             count++;
+    //                                             while (true) {
+    //                                                 System.out.println("ADD ANOTHER STATION TO LINE?");
+    //                                                 System.out.println("(1): YES");
+    //                                                 System.out.println("(2): NO");
+
+    //                                                 int userSelection = chooseOrderNum.nextInt();
+
+    //                                                 if (userSelection == 1) {
+    //                                                     break;
+    //                                                 } else if (userSelection == 2) {
+
+    //                                                     System.out.println("");
+
+    //                                                     Statement rgstrcheck = newConnect.createStatement();
+
+
+
+
+    //                                                     String passQuery = "INSERT INTO Line VALUES ('" + name + "')";
+    //                                                     ResultSet rgstrSet = rgstrcheck.executeQuery(passQuery);
+    //                                                     String adminAddQuery = "INSERT INTO Admin_Add_Line VALUES('" + name + "', '" + userID + "', sysdate())";
+    //                                                     ResultSet adminAddSet = rgstrcheck.executeQuery(adminAddQuery);
+
+    //                                                     for (int j = 0; j < count; j++) {
+    //                                                         String lineAddQuery = "INSERT INTO Station_On_Line VALUES('" + station[j] + "', '" + name + "', '" + arrStationNumbers[j] + "')";
+    //                                                         ResultSet lineAddSet = rgstrcheck.executeQuery(lineAddQuery);
+    //                                                     }
+
+    //                                                     System.out.println("Congrats you added a line");
+    //                                                     return 0;
+
+    //                                                 } else {
+    //                                                     System.out.println("Enter a valid number");
+    //                                                 }
+    //                                             }
+    //                                         }
+    //                                         break;
+    //                                     }
+    //                                 }
+    //                             }
+    //                         }
+
+    //                     }
+             //        }
+
+    //             }
+    //         }
+
+    //     }
+    // }
 
 }

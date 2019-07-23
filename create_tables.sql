@@ -24,6 +24,7 @@ CREATE TABLE Admin
 			CONSTRAINT ADMINIDCASCADES FOREIGN KEY (ID) REFERENCES User(ID) ON DELETE CASCADE*/
 );
 
+
 CREATE TABLE Station
 (
     name varchar(255),
@@ -145,7 +146,7 @@ CREATE TABLE Station_On_Line
 (
     station_name varchar(255),
     line_name varchar(255),
-    order_number int UNIQUE,
+    order_number int,
     PRIMARY KEY(station_name, line_name),
     FOREIGN KEY(station_name) REFERENCES Station(name) ON UPDATE CASCADE ON DELETE CASCADE,
 			/*ON DELETE CASCADE,
@@ -172,7 +173,7 @@ INSERT INTO Admin_Add_Station VALUES("random arc", "chal68", SYSDATE()); /* admi
 INSERT INTO Station_On_Line VALUES("Arc", "The Test Line", 3); /* station on line being added. */
 INSERT INTO Station_On_Line VALUES("Not arc", "The Test Line", 2);
 INSERT INTO Station_On_Line VALUES("random arc", "The Test Line", 1);
-INSERT INTO Card VALUES("AMERICA", "T-mes", sysdate(), NULL, "2018-12-13");
+/*INSERT INTO Card VALUES("AMERICA", "T-mes", sysdate(), NULL, "2018-12-13");*/
 /*INSERT INTO Card VALUES("chal68", "T-mes", SYSDATE())
 INSERT INTO Card VALUES("chal68", "T-mes", 20191212)*/
 /*INSERT INTO Card VALUES("chal68", "T-mes", 20190506, 50, 20191213);*/

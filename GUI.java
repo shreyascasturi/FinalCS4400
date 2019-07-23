@@ -1781,7 +1781,8 @@ public class GUI {
             System.out.printf("CHOOSE A NUMBER TO EXPLORE DIFFERENT OPTIONS. %n 1. View Trips %n 2. Buy Card %n 3. Go On Trip %n 4. Review Passenger Reviews %n 5. Edit Profile %n"
                               + " 6. Add Station %n 7. Add Line %n 8. Goto Login %n 9. Goto Welcome Screen %n 10. Quit Fully %n");
             System.out.print("CHOOSE AN OPTION: ");
-            int chooseAdminInt = chooseAdminGUI.nextInt(); // same old, basically.
+            String chooseAdmin = chooseAdminGUI.nextLine(); // same old, basically.
+            int chooseAdminInt = checkIfNumeric(chooseAdmin) ? Integer.parseInt(chooseAdmin) : -2;
             if (chooseAdminInt == 1) {
                 // leaveReview(newConnect);
                 // break; //return 0; // leave review
@@ -2614,24 +2615,6 @@ public class GUI {
                                                                                                             }
                                                                                                         }
 
-                                                                                                        System.out.println("");
-
-                                                                                                        Statement rgstrcheck = newConnect.createStatement();
-                                                                                                        String passQuery = "INSERT INTO Station VALUES ('" + name + "', '" + status + "', '" + stateProvince + "', '" + address + "', '" + zipcode + "', '" + city + "')";
-                                                                                                        ResultSet rgstrSet = rgstrcheck.executeQuery(passQuery);
-                                                                                                        String adminAddQuery = "INSERT INTO Admin_Add_Station VALUES ('" + name + "', '" + userID + "', sysdate())";
-                                                                                                        ResultSet amdinAddSet = rgstrcheck.executeQuery(adminAddQuery);
-
-                                                                                                        // String testQuery = "SELECT * FROM User WHERE ID='" + userID + "'";
-                                                                                                        // ResultSet testSet = rgstrcheck.executeQuery(testQuery);
-
-                                                                                                        // if (!(testSet.isBeforeFirst())) {
-                                                                                                        //     System.out.println("username is not unique. try again.");
-                                                                                                        //     System.out.println("-------- RETURNING TO LOGIN SCREEN, PASSWORD DOESN'T MATCH WITH GIVEN USERNAME ---------");
-                                                                                                        // } else {
-                                                                                                            System.out.println("Congrats, you've added a station.");
-                                                                                                            return 0; // break completely;
-                                                                                                        // }
                                                                                                     }
                                                                                                 }
                                                                                             }
